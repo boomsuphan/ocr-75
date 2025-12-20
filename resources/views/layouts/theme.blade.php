@@ -70,20 +70,20 @@
                   <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent6">
                     <ul id="nav6" class="navbar-nav ms-auto">
                       <li class="nav-item">
-                        <a class="page-scroll active" href="#home">Home</a>
+                        <a class="page-scroll active" href="#home">หน้าแรก</a>
                       </li>
                       <li class="nav-item">
-                        <a class="page-scroll" href="#feature">Feature</a>
+                        <a class="page-scroll" href="#feature">จัดการห้องเรียน</a>
                       </li>
                       <li class="nav-item">
-                        <a class="page-scroll" href="#about">About</a>
+                        <a class="page-scroll" href="#about">จัดการสมาชิก</a>
                       </li>
 
                       <li class="nav-item">
-                        <a class="page-scroll" href="#pricing">Pricing</a>
+                        <a class="page-scroll" href="#pricing">สแกน QR-Code</a>
                       </li>
                       <li class="nav-item">
-                        <a class="page-scroll" href="#contact">Contact</a>
+                        <a class="page-scroll" href="#contact">ประวัติการใช้งาน</a>
                       </li>
                     </ul>
                   </div>
@@ -107,14 +107,14 @@
     </section>
     <!-- ========================= hero-section-wrapper-6 end ========================= -->
     <div style="height: 100px;"></div>
-  <main class="py-4">
+  <main class="p-4">
             @yield('content')
     </main>
     <!-- ========================= footer style-4 start ========================= -->
     <footer class="footer footer-style-4 mt-auto" style="padding-top:10px !important;">
       <div class="container">
         <div class="copyright-wrapper wow fadeInUp" data-wow-delay=".2s">
-          <p>Design and Developed by <a href="https://uideck.com" rel="nofollow" target="_blank">UIdeck</a> Built-with <a href="https://uideck.com" rel="nofollow" target="_blank">Lindy UI Kit</a>. Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a></p>
+          <p>นายนครินทร์ สระทองจุด</p>
         </div>
       </div>
     </footer>
