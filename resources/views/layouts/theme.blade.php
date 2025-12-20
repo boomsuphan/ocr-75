@@ -20,7 +20,7 @@
 
     <link rel="shortcut icon" href="{{ asset('theme/assets/img/logo/logo-cs.png') }}" type="image/x-icon" />
   </head>
-  <body>
+  <body class="d-flex flex-column min-vh-100">
     <!--[if lte IE 9]>
       <p class="browserupgrade">
         You are using an <strong>outdated</strong> browser. Please
@@ -111,7 +111,7 @@
             @yield('content')
     </main>
     <!-- ========================= footer style-4 start ========================= -->
-    <footer class="footer footer-style-4" style="padding-top:10px !important;">
+    <footer class="footer footer-style-4 mt-auto" style="padding-top:10px !important;">
       <div class="container">
         <div class="copyright-wrapper wow fadeInUp" data-wow-delay=".2s">
           <p>Design and Developed by <a href="https://uideck.com" rel="nofollow" target="_blank">UIdeck</a> Built-with <a href="https://uideck.com" rel="nofollow" target="_blank">Lindy UI Kit</a>. Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a></p>
