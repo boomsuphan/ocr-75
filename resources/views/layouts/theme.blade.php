@@ -17,8 +17,17 @@
 
     <!-- icon -->
     <link href="https://kit-pro.fontawesome.com/releases/v6.7.0/css/pro.min.css" rel="stylesheet">
+     <!-- font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
 
-    <link rel="shortcut icon" href="{{ asset('theme/assets/img/logo/logo-cs.png') }}" type="image/x-icon" />
+    <style>
+      *:not(i){
+  font-family: "Google Sans", sans-serif;
+        
+      }
+    </style>
   </head>
   <body class="d-flex flex-column min-vh-100">
     <!--[if lte IE 9]>
@@ -107,7 +116,7 @@
     </section>
     <!-- ========================= hero-section-wrapper-6 end ========================= -->
     <div style="height: 100px;"></div>
-  <main class="p-4">
+  <main class="" >
             @yield('content')
     </main>
     <!-- ========================= footer style-4 start ========================= -->
