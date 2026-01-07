@@ -22,5 +22,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/demo/home', function () {
-    return view('demo/home');
+    return view('demo/home2');
 });
+Route::get('/demo/qrcode', function () {
+    return view('demo/qrcode');
+});
+

@@ -336,7 +336,7 @@
 
         <div class="rooms-grid" id="rooms-container"></div>
     </div>
- <!-- <a class="dropdown-item" href="{{ route('logout') }}"
+ <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
@@ -344,7 +344,7 @@
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
-                                    </form> -->
+                                    </form>
     <script>
         const rooms = [
             { name: 'IT 401', building: 'อาคาร IT', capacity: 40 },

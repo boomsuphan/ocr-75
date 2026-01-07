@@ -1,255 +1,56 @@
-@extends('layouts.theme')
+@extends('layouts.themeNew')
 
 @section('content')
 
-    <style>
-        main{
-            padding: 0 !important;
-        }
 
-   
-        .login-container {
-            width: 100%;
-            max-width: 440px !important;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(47, 128, 237, 0.1);
-            overflow: hidden;
-        }
-
-        .login-header {
-            background: #2F80ED;
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .login-header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .login-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .login-body {
-            padding: 40px 30px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
-            min-height: calc(100dvh - 175px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-content {
-            padding: 40px 30px;
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            font-family: inherit;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #2F80ED;
-            box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.1);
-        }
- .form-group input.is-invalid {
-            outline: none;
-            border-color: #ed2f2fff;
-            box-shadow: 0 0 0 3px rgba(237, 47, 47, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: #999;
-        }
-
-      
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-
-         .back-btn {
-            padding: 14px;
-            background: #fff;
-            color: #636363ff;
-            border: 2px solid #636363ff;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-            width: 30% !important;
-            margin-right: 5px;
-        }
-
-        .back-btn:hover {
-            background: #636363ff;
-            color:white;
-        }
-
-        .back-btn:active {
-            transform: scale(0.98);
-        }
-
-        .form-btn {
-            width: 100%;
-            padding: 14px;
-            background: #2F80ED;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-        }
-
-        .form-btn:hover {
-            background: #1a6bd6;
-        }
-
-        .form-btn:active {
-            transform: scale(0.98);
-        }
-
-      
-
-        .error-message {
-            background: #FFF3F3;
-            color: #D32F2F;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            border: 1px solid #FFE0E0;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .success-message {
-            background: #E8F5E9;
-            color: #2E7D32;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            border: 1px solid #C8E6C9;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        @media (max-width: 480px) {
-            .login-header {
-                padding: 30px 20px;
-            }
-
-            .login-header h1 {
-                font-size: 24px;
-            }
-
-            .login-body {
-                padding: 30px 20px;
-            }
-
-            .form-options {
-                flex-direction: column;
-                gap: 12px;
-                align-items: flex-start;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-card {
-            animation: fadeIn 0.5s ease-out;
-        }
-    </style>
-    <div class="login-body">
-
-        <div class="login-container">
-            <div class="login-card">
-                <div class="login-header">
-                    <h1>ระบบจองห้องเรียน</h1>
-                    <p class="subtitle">ลืมรหัสผ่าน</p>
-                </div>
-                
-                <div class="login-content">
-                    <div class="error-message" id="error-message"></div>
-                    <div class="success-message" id="success-message"></div>
-    
-                  <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
-                        <div class="form-group">
-                            <label for="username">อีเมล</label>
-                           <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="กรอกอีเมลของคุณ">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                        </div>
-                        <div class="d-flex">
-
-                            <a href="{{ url()->previous() }}" class="back-btn" >ย้อนกลับ</a>
-                            <button type="submit" class="form-btn">
-                               {{ __('ยืนยัน') }}
-                           </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<div class="w-full max-w-[520px] bg-white dark:bg-[#1A2633] rounded-xl shadow-sm border border-[#e6e8eb] dark:border-[#24303d] overflow-hidden flex flex-col">
+    <!-- Headline & Illustration -->
+    <div class="pt-10 px-8 pb-4 flex flex-col items-center">
+        <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-primary text-3xl">lock_reset</span>
         </div>
+        <h2 class="text-[#111418] dark:text-white tracking-tight text-[28px] font-bold leading-tight text-center">ลืมรหัสผ่าน?</h2>
+        <p class="text-[#637588] dark:text-[#9ba1a6] text-base font-normal leading-normal mt-3 text-center max-w-sm">
+            กรอกอีเมลของคุณที่นี่ แล้วเราจะส่งลิงก์สำหรับตั้งรหัสผ่านใหม่ให้คุณ
+        </p>
     </div>
+    <!-- Form Section -->
+    <div class="px-8 pb-10 w-full">
+        <form method="POST" class="flex flex-col gap-6" action="{{ route('password.email') }}">
+            @csrf
+            <!-- Email Input -->
+            <label class="flex flex-col w-full">
+                <p class="text-[#111418] dark:text-white text-sm font-medium leading-normal pb-2">อีเมล</p>
+                <div class="relative flex w-full items-center rounded-lg">
+                    <!-- <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary border border-[#dbe0e6] dark:border-[#3e4c59] bg-white dark:bg-[#111a22] h-12 placeholder:text-[#9CA3AF] pl-4 pr-12 text-base font-normal leading-normal transition-all" placeholder="6xxxxxxx@student.university.ac.th" type="email" value="" /> -->
+                     <input id="email" type="email" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 focus:border-primary border border-[#dbe0e6] dark:border-[#3e4c59] bg-white dark:bg-[#111a22] h-12 placeholder:text-[#9CA3AF] pl-4 pr-12 text-base font-normal leading-normal transition-all @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" type="email" autofocus placeholder="xxxxx@vru.ac.th">
+
+                  
+                    
+                    <div class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-[#9CA3AF] pointer-events-none">
+                        <span class="material-symbols-outlined">mail</span>
+                    </div>
+                </div>
+                  @error('email')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+            </label>
+            <!-- Buttons -->
+            <div class="flex flex-col gap-3 pt-2">
+                <!-- Primary Button -->
+                <button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-sm">
+                    <span class="truncate">ส่งลิงก์กู้คืนรหัสผ่าน</span>
+                </button>
+                <!-- Back Button -->
+                <a href="{{url('/login')}}" class="flex w-full cursor-pointer items-center justify-center rounded-lg h-12 text-[#637588] dark:text-[#9ba1a6] hover:text-[#111418] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-[#24303d] transition-all text-sm font-medium leading-normal gap-2" href="#">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    <span class="truncate">กลับไปหน้าเข้าสู่ระบบ</span>
+                </a>
+            </div>
+    </div>
+</div>
 <!-- <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
