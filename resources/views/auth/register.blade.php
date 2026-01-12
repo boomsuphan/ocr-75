@@ -74,7 +74,7 @@
 </style>
 <div class="w-full max-w-[800px] flex flex-col gap-6">
     <!-- Page Header -->
-    <div class="text-center sm:text-left space-y-2 mb-2">
+    <div class="text-center sm:text-left space-y-2 mb-2 border-b border-gray-200 dark:border-gray-700 pb-4">
         <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-text-main-light dark:text-text-main-dark">
             สมัครสมาชิก
         </h2>

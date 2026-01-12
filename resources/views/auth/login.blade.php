@@ -21,7 +21,7 @@
             <!-- Username Input -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal" for="username">
-                    ชื่อผู้ใช้ / รหัสนักศึกษา
+                    ชื่อผู้ใช้
                 </label>
                 <div class="mb-4">
 

@@ -22,12 +22,14 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/demo/home', function () {
-    return view('demo/home2');
+    return view('demo/home');
 });
 Route::get('/demo/qrcode', function () {
     return view('demo/qrcode');
 });
-
+Route::get('/demo/history', function () {
+    return view('demo/history');
+});
 
 // ROLE
 // ---------------------------------------------//
