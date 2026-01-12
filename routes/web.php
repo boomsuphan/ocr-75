@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Auth::routes();
@@ -28,3 +28,36 @@ Route::get('/demo/qrcode', function () {
     return view('demo/qrcode');
 });
 
+
+// ROLE
+// ---------------------------------------------//
+// admin >> แอดมิน
+// officer  >> เจ้าหน้าที่
+// professor >> อาจารย์
+// students >> นักศึกษา
+// ---------------------------------------------//
+
+// แอดมิน
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('room', 'RoomController');
+});
+
+// แอดมิน, เจ้าหน้าที่
+Route::middleware(['auth', 'role:admin,officer'])->group(function () {
+    // 
+});
+
+// แอดมิน, เจ้าหน้าที่, อาจารย์
+Route::middleware(['auth', 'role:admin,officer,professor'])->group(function () {
+    // 
+});
+
+// แอดมิน, เจ้าหน้าที่, อาจารย์, นักศึกษา
+Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(function () {
+    Route::resource('booking', 'BookingController')->except(['create','show']);
+    Route::get('create_booking/{room_id}', 'BookingController@create_booking');
+    Route::get('booking/show_qr/{code}', 'BookingController@show_qr');
+});
+
+
+Route::resource('semesters', 'SemestersController');

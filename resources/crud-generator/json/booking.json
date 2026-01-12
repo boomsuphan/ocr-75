@@ -1,0 +1,64 @@
+{
+    "fields": [
+        {
+            "name": "room_id",
+            "type": "string"
+        },
+        {
+            "name": "user_id",
+            "type": "string"
+        },
+        {
+            "name": "subject",
+            "type": "string"
+        },
+        {
+            "name": "name_professor",
+            "type": "string"
+        },
+        {
+            "name": "note",
+            "type": "string"
+        },
+        {
+            "name": "semester",
+            "type": "string"
+        },
+        {
+            "name": "date_booking",
+            "type": "date"
+        },
+        {
+            "name": "time_start_booking",
+            "type": "time"
+        },
+        {
+            "name": "time_end_booking",
+            "type": "time"
+        },
+        {
+            "name": "time_get_key",
+            "type": "time"
+        },
+        {
+            "name": "time_return_key",
+            "type": "time"
+        },
+        {
+            "name": "code_for_qr",
+            "type": "string"
+        },
+        {
+            "name": "id_officer_give_key",
+            "type": "string"
+        },
+        {
+            "name": "id_officer_return_key",
+            "type": "string"
+        },
+        {
+            "name": "status",
+            "type": "string"
+        }
+    ]
+}
