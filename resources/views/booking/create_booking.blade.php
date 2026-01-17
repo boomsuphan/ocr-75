@@ -213,17 +213,12 @@
 
                 <div class="flex items-center justify-between mb-4 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-100 dark:border-blue-800">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-xl">event_available</span>
-                        <span class="text-sm text-gray-600 dark:text-gray-300">ข้อมูลการจองวันที่:</span>
-                        <span id="timelineDateDisplay" class="text-base font-bold text-primary dark:text-blue-300">
+                        <span class="text-sm text-gray-600 dark:text-gray-300">วันที่</span>
+                        <span id="timelineDateDisplay" class="text-base text-primary dark:text-blue-300">
                             ...
                         </span>
                     </div>
                     
-                    <div class="flex items-center gap-2 text-xs">
-                        <div class="w-3 h-3 rounded bg-red-100 border border-red-200 dark:bg-red-900/30 dark:border-red-800"></div>
-                        <span class="text-red-600 dark:text-red-400">ไม่ว่าง</span>
-                    </div>
                 </div>
                 
                 <div id="scheduleGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
@@ -389,7 +384,7 @@
             } else {
                 // Card ไม่ว่าง
                 card.className = "flex flex-col justify-center p-3 rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 text-center min-h-[80px] shadow-sm relative overflow-hidden group";
-                
+
                 const subject = 'ไม่ว่าง';
                 
                 card.innerHTML = `
