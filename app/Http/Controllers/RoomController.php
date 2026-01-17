@@ -119,4 +119,11 @@ class RoomController extends Controller
 
         return redirect('room')->with('flash_message', 'Room deleted!');
     }
+
+    public function room_detail($id)
+    {
+        $room = Room::findOrFail($id);
+
+        return view('room.room_detail', compact('room'));
+    }
 }

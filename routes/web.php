@@ -46,7 +46,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // แอดมิน, เจ้าหน้าที่
 Route::middleware(['auth', 'role:admin,officer'])->group(function () {
-    // 
+    Route::get('scan_qr', 'BookingController@scan_qr');
+    Route::get('check_qr/{code}', 'BookingController@check_qr');
+    Route::post('save_give_key', 'BookingController@save_give_key');
+    Route::post('save_return_key', 'BookingController@save_return_key');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์
@@ -59,6 +62,7 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
     Route::resource('booking', 'BookingController')->except(['create','show']);
     Route::get('create_booking/{room_id}', 'BookingController@create_booking');
     Route::get('booking/show_qr/{code}', 'BookingController@show_qr');
+    Route::get('room_detail/{room_id}', 'RoomController@room_detail');
 });
 
 

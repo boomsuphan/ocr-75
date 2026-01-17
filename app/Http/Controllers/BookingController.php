@@ -176,4 +176,83 @@ class BookingController extends Controller
 
         return view('booking.show_qr', compact('data_user','bookings','rooms'));
     }
+
+    public function scan_qr(Request $request)
+    {
+        
+        $requestData = $request->all();
+        $data_user = Auth::user();
+
+        return view('admin.scan_qr', compact('data_user'));
+    }
+
+    public function check_qr($code)
+    {
+        $data_user = Auth::user();
+        $bookings = Booking::with('user')->where('code_for_qr' , $code)->first(); 
+        
+        if(!$bookings) {
+            return redirect('scan_qr')->with('error', 'ไม่พบข้อมูลการจอง หรือ QR Code ไม่ถูกต้อง');
+        }
+
+        $rooms = Room::where('id' , $bookings->room_id)->first();
+
+        if ($bookings->status == 'จองเรียบร้อย') {
+            // เคส 1: มาเบิกกุญแจ
+            return view('admin.confirm_get_keys', compact('data_user','bookings','rooms'));
+
+        } elseif ($bookings->status == 'รับกุญแจแล้ว') {
+            // เคส 2: มาคืนกุญแจ
+            return view('admin.confirm_return_key', compact('data_user','bookings','rooms'));
+
+        } else {
+            // เคส 3: สถานะอื่นๆ
+            return redirect('scan_qr')->with('error', 'ไม่สามารถทำรายการได้ สถานะปัจจุบัน: '.$bookings->status);
+        }
+    }
+
+    public function save_give_key(Request $request)
+    {
+        $booking = Booking::find($request->booking_id);
+        
+        $randomCode = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+
+        $booking->update([
+            'status' => 'รับกุญแจแล้ว',
+            'time_get_key' => now(),
+            'id_officer_give_key' => Auth::id(),
+            'return_verify_code' => $randomCode
+        ]);
+
+        return redirect('room_detail/' . $booking->room_id)->with('flash_message', 'บันทึกการเบิกกุญแจสำเร็จ');
+    }
+
+    public function save_return_key(Request $request)
+    {
+        $request->validate([
+            'verify_code' => 'required|numeric|digits:4',
+        ]);
+
+        $booking = Booking::find($request->booking_id);
+
+        // 1. ตรวจสอบสถานะ
+        if ($booking->status != 'รับกุญแจแล้ว') {
+            return redirect('scan_qr')->with('error', 'สถานะไม่ถูกต้อง');
+        }
+
+        // 2. *** ตรวจสอบรหัสยืนยัน *** 
+        if ($booking->return_verify_code !== $request->verify_code) {
+            return redirect()->back()->with('error', 'รหัสยืนยันไม่ถูกต้อง! กรุณาถามรหัสจากนักศึกษาใหม่อีกครั้ง');
+        }
+
+        // 3. รหัสถูกต้อง บันทึกข้อมูล
+        $booking->update([
+            'status' => 'คืนกุญแจแล้ว',
+            'time_return_key' => now(),
+            'id_officer_return_key' => Auth::id()
+        ]);
+
+        return redirect('scan_qr')->with('flash_message', 'รับคืนกุญแจเรียบร้อย! (รหัสยืนยันถูกต้อง)');
+    }
+
 }

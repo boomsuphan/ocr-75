@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\User;
+use App\Models\Booking;
+
 class Room extends Model
 {
     /**
@@ -27,5 +30,9 @@ class Room extends Model
      */
     protected $fillable = ['name', 'floor', 'status'];
 
-    
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'room_id');
+    }
+
 }
