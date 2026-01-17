@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+Thai:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+	<link rel="shortcut icon" href="{{ asset('/theme/assets/img/logo/logo-cs-2.png') }}" type="image/x-icon" />
+
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -61,7 +63,9 @@
         <div class="max-w-[1280px] mx-auto px-4 sm:px-10 py-3 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-center text-primary">
-                    <span class="material-symbols-outlined text-3xl">domain</span>
+                    <span class="material-symbols-outlined text-3xl">
+                        <img src="{{ asset('/theme/assets/img/logo/logo-cs.png') }}" alt="" width="40">
+                    </span>
                 </div>
                 <h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">ระบบจองห้องเรียน</h2>
             </div>
@@ -219,7 +223,7 @@
     </main>
     <!-- Footer (Simple) -->
     <footer class="py-6 text-center text-sm text-[#617589] dark:text-gray-500">
-        © 2024 ระบบจองห้องเรียน มหาวิทยาลัย. สงวนลิขสิทธิ์.
+        ระบบจองห้องเรียน boomth.com
     </footer>
 </body>
 
