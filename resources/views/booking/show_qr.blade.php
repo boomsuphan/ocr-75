@@ -39,7 +39,7 @@
                             <div id="qrcode" class="flex justify-center items-center"></div>
                         </div>
 
-                        <p class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">QR Code สำหรับเบิกกุญแจ</p>
+                        <p class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">QR Code สำหรับเบิก/คืนกุญแจ</p>
                         <p class="text-[#617589] dark:text-gray-400 text-sm mt-1">กรุณาแสดงต่อเจ้าหน้าที่</p>
                     </div>
 
