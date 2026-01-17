@@ -255,4 +255,10 @@ class BookingController extends Controller
         return redirect('scan_qr')->with('flash_message', 'รับคืนกุญแจเรียบร้อย! (รหัสยืนยันถูกต้อง)');
     }
 
+    public function get_data_create_booking($room_id)
+    {
+        $rooms = Booking::where('room_id' , $room_id)->get();
+        return response()->json($rooms);
+
+    }
 }

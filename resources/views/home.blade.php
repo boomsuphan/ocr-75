@@ -11,10 +11,10 @@
                     <h1 class="text-[#111418] dark:text-white text-3xl md:text-4xl font-bold leading-tight tracking-[-0.033em]">ตารางการใช้ห้องเรียน</h1>
                     <div class="flex items-center gap-2 text-[#617589] dark:text-gray-400 text-sm font-normal">
                         <span class="material-symbols-outlined text-lg">calendar_today</span>
-                        <span>วันศุกร์ที่ 27 ตุลาคม 2566</span>
+                        <span>{{ thaidate("lที่ j F Y", strtotime(now())) }}</span>
                         <span class="mx-1">•</span>
                         <span class="material-symbols-outlined text-lg">schedule</span>
-                        <span class="text-primary font-medium">10:30 น. (กำลังใช้งาน)</span>
+                        <span class="text-primary font-medium">เวลา {{ thaidate("H:i", strtotime(now()->timezone('Asia/Bangkok'))) }} น. (กำลังใช้งาน)</span>
                     </div>
                 </div>
             </div>
@@ -29,34 +29,53 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach($room as $item)
+
                 <div class="bg-white dark:bg-[#1e2732] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
                     <div class="p-6 flex-grow">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-primary">
                                 <span class="material-symbols-outlined text-2xl">computer</span>
                             </div>
+                            @if($item->status === "Active")
                             <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-green-900/20 px-3 py-1 text-xs font-bold text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800">
                                 <span class="h-2 w-2 rounded-full bg-green-500"></span>
                                 ว่าง
                             </span>
+                            @else
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-900/20 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800">
+                                <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                                ไม่ว่าง
+                            </span>
+                            @endif
                         </div>
-                        <h3 class="font-bold text-[#111418] dark:text-white text-xl mb-1">IT 401</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Computer Lab • Cap: 30</p>
-                        <div class="flex flex-col gap-2 mt-auto">
-                            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                <span class="material-symbols-outlined text-base">nest_cam_indoor</span>
-                                <span>Projector, AC</span>
-                            </div>
-                        </div>
+                        <h3 class="font-bold text-[#111418] dark:text-white text-xl mb-1">{{$item->name}}</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">ห้อมคอมพิวเตอร์ • ชั้น: {{$item->floor}}</p>
+                        <!-- <div class="flex flex-col gap-2 mt-auto">
+                             <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                 <span class="material-symbols-outlined text-base">nest_cam_indoor</span>
+                                 <span>Projector, AC</span>
+                             </div>
+                         </div> -->
                     </div>
+                    @if($item->status === "Active")
+
                     <div class="border-t border-gray-100 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
-                        <button class="w-full h-10 rounded-lg bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+                        <a href="{{ url('/create_booking' . '/' . $item->id) }}" class="w-full h-10 rounded-lg bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
                             <span>จองห้อง</span>
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                    @else
+                    <div class="border-t border-gray-100 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800/50">
+                        <button class="w-full h-10 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm font-bold cursor-not-allowed border border-transparent flex items-center justify-center gap-2" disabled="">
+                            <span>ไม่สามารถจองได้</span>
                         </button>
                     </div>
+                    @endif
                 </div>
-                <div class="bg-white dark:bg-[#1e2732] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                @endforeach
+                <!-- <div class="bg-white dark:bg-[#1e2732] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
                     <div class="p-6 flex-grow">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-600">
@@ -109,6 +128,7 @@
                         </button>
                     </div>
                 </div>
+
                 <div class="bg-white dark:bg-[#1e2732] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition-shadow opacity-90">
                     <div class="p-6 flex-grow">
                         <div class="flex items-start justify-between mb-4">
@@ -188,7 +208,7 @@
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </button>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </main>

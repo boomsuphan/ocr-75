@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Room;
 
 class HomeController extends Controller
 {
@@ -22,7 +23,13 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {
-        return view('home');
+    {   
+        $perPage = 25;
+
+      
+        $room = Room::all();
+        
+
+        return view('home', compact('room'));
     }
 }

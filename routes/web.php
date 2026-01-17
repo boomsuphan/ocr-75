@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/', 'HomeController@index')->name('home');
 
 Auth::routes();
 
@@ -30,7 +28,9 @@ Route::get('/demo/qrcode', function () {
 Route::get('/demo/history', function () {
     return view('demo/history');
 });
-
+Route::get('/demo/home2', function () {
+    return view('demo/home2');
+});
 // ROLE
 // ---------------------------------------------//
 // admin >> แอดมิน

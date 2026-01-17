@@ -22,6 +22,12 @@
                         "background-dark": "#101922",
                         "text-dark": "#111418",
                         "text-light": "#617589",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2a2d35",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#3f424a",
+                        "text-main": "#0f172a",
+                        "text-muted": "#64748b",
                     },
                     fontFamily: {
                         "display": ["Lexend", "Noto Sans Thai", "sans-serif"],
