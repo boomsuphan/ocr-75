@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans+Thai:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-	<link rel="shortcut icon" href="{{ asset('/theme/assets/img/logo/logo-cs-2.png') }}" type="image/x-icon" />
+	<link rel="shortcut icon" href="{{ asset('/theme/assets/img/logo/logo-cs.png') }}" type="image/x-icon" />
 
     <script>
         tailwind.config = {
