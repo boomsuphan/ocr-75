@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Models\Booking;
 
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -123,7 +124,8 @@ class RoomController extends Controller
     public function room_detail($id)
     {
         $room = Room::findOrFail($id);
+        $booking = Booking::where('room_id' , $room->id)->get();
 
-        return view('room.room_detail', compact('room'));
+        return view('room.room_detail', compact('room','booking'));
     }
 }
