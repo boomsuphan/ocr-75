@@ -207,7 +207,7 @@ class BookingController extends Controller
 
         } else {
             // เคส 3: สถานะอื่นๆ
-            return redirect('scan_qr')->with('error', 'ไม่สามารถทำรายการได้ สถานะปัจจุบัน: '.$bookings->status);
+            return redirect('room_detail/' . $rooms->id)->with('error', 'ไม่สามารถทำรายการได้ สถานะปัจจุบัน: '.$bookings->status);
         }
     }
 
@@ -252,7 +252,7 @@ class BookingController extends Controller
             'id_officer_return_key' => Auth::id()
         ]);
 
-        return redirect('scan_qr')->with('flash_message', 'รับคืนกุญแจเรียบร้อย! (รหัสยืนยันถูกต้อง)');
+        return redirect('room_detail/' . $booking->room_id)->with('flash_message', 'รับคืนกุญแจเรียบร้อย! (รหัสยืนยันถูกต้อง)');
     }
 
     public function get_data_create_booking($room_id)

@@ -31,7 +31,12 @@
 
                 <div class="relative flex flex-col rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-white dark:bg-zinc-900 overflow-hidden border border-zinc-100 dark:border-zinc-800">
                     
-                    <div class="relative p-8 flex flex-col items-center justify-center bg-white dark:bg-zinc-900 border-b border-dashed border-zinc-200 dark:border-zinc-700">
+                    <div class="relative p-2 flex flex-col items-center justify-center bg-white dark:bg-zinc-900 border-b border-dashed border-zinc-200 dark:border-zinc-700">
+
+                        <span class="inline-flex items-center px-3 py-1 mb-2 rounded-full bg-blue-100 text-blue-700 text-sm font-bold">
+                            {{ $bookings->status }}
+                        </span>
+
                         <div class="ticket-punch-l -left-3 bg-punch-light dark:bg-punch-dark shadow-[inset_-2px_0_3px_rgba(0,0,0,0.05)]"></div>
                         <div class="ticket-punch-r -right-3 bg-punch-light dark:bg-punch-dark shadow-[inset_2px_0_3px_rgba(0,0,0,0.05)]"></div>
                         
@@ -39,8 +44,9 @@
                             <div id="qrcode" class="flex justify-center items-center"></div>
                         </div>
 
-                        <p class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">QR Code สำหรับเบิก/คืนกุญแจ</p>
-                        <p class="text-[#617589] dark:text-gray-400 text-sm mt-1">กรุณาแสดงต่อเจ้าหน้าที่</p>
+                        <p class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">กรุณาแสดงต่อเจ้าหน้าที่</p>
+                        <p class="text-[#617589] dark:text-gray-400 text-sm mt-1">รหัสการจอง {{ $bookings->code_for_qr }}</p>
+
                     </div>
 
                     <div class="p-6 bg-zinc-50/50 dark:bg-zinc-800/50">
