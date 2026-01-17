@@ -14,18 +14,18 @@
                         <span>{{ thaidate("lที่ j F Y", strtotime(now())) }}</span>
                         <span class="mx-1">•</span>
                         <span class="material-symbols-outlined text-lg">schedule</span>
-                        <span class="text-primary font-medium">เวลา {{ thaidate("H:i", strtotime(now()->timezone('Asia/Bangkok'))) }} น. (กำลังใช้งาน)</span>
+                        <span class="text-primary font-medium">เวลา {{ thaidate("H:i", strtotime(now()->timezone('Asia/Bangkok'))) }} น.</span>
                     </div>
                 </div>
             </div>
             <div class="flex items-center gap-6 px-2">
                 <div class="flex items-center gap-2">
                     <span class="block w-3 h-3 rounded-full bg-green-500"></span>
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">ว่าง</span>
+                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">เปิด</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="block w-3 h-3 rounded-full bg-red-500"></span>
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">ไม่ว่าง</span>
+                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">ไม่เปิด</span>
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -40,12 +40,12 @@
                             @if($item->status === "Active")
                             <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 dark:bg-green-900/20 px-3 py-1 text-xs font-bold text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800">
                                 <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                                ว่าง
+                                เปิด
                             </span>
                             @else
                             <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 dark:bg-red-900/20 px-3 py-1 text-xs font-bold text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800">
                                 <span class="h-2 w-2 rounded-full bg-red-500"></span>
-                                ไม่ว่าง
+                                ไม่เปิด
                             </span>
                             @endif
                         </div>
