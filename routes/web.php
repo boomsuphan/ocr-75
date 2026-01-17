@@ -62,6 +62,7 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
     Route::resource('booking', 'BookingController')->except(['create','show']);
     Route::get('create_booking/{room_id}', 'BookingController@create_booking');
     Route::get('booking/show_qr/{code}', 'BookingController@show_qr');
+    Route::get('get_data_create_booking/{room_id}', 'BookingController@get_data_create_booking');
     Route::get('room_detail/{room_id}', 'RoomController@room_detail');
 });
 
