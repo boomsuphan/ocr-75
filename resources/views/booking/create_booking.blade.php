@@ -221,11 +221,46 @@
                     
                 </div>
                 
-                <div id="scheduleGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <!-- <div id="scheduleGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                     <div class="col-span-full text-center py-8 text-gray-400">
                         กำลังโหลดข้อมูล...
                     </div>
+                </div> -->
+
+                <div class="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-6 overflow-hidden">
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <div class="overflow-x-auto scrollbar-hide"> <div class="min-w-[1400px]"> <table class="w-full border-collapse">
+                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                        <tr>
+                                            <th class="p-4 text-sm font-semibold text-center w-32 border border-gray-200 dark:border-gray-700 sticky left-0 bg-gray-50 dark:bg-gray-900 z-10">สถานะ</th>
+                                            <script>
+                                                const timesHeader = [
+                                                    "07:30-08:30", "08:30-09:30", "09:30-10:30", "10:30-11:30", 
+                                                    "11:30-12:30", "12:30-13:30", "13:30-14:30", "14:30-15:30", 
+                                                    "15:30-16:30", "16:30-17:30", "17:30-18:30", "18:30-20:30", 
+                                                    "20:30-21:30", "21:30-22:30", "22:30-23:30", "23:30-00:30", 
+                                                    "00:30-01:30"
+                                                ];
+                                                timesHeader.forEach((t, i) => {
+                                                    document.write(`
+                                                        <th class="p-3 text-xs font-semibold text-center text-gray-600 dark:text-gray-400 min-w-[100px] border border-gray-200 dark:border-gray-700">
+                                                            <div class="mb-1">คาบ ${i+1}</div>
+                                                            <div class="text-[10px] font-normal opacity-70">${t}</div>
+                                                        </th>
+                                                    `);
+                                                });
+                                            </script>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scheduleTable" class="bg-white dark:bg-gray-800">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -240,13 +275,26 @@
     // รับค่า Time Slots จาก PHP
     const timeSlotsPHP = @json($timeSlots);
     
-    // Mapping เวลาสำหรับคำนวณ Timeline และ Label
-    const timeLabels = [
-        "07:30-08:30", "08:30-09:30", "09:30-10:30", "10:30-11:30", 
-        "11:30-12:30", "12:30-13:30", "13:30-14:30", "14:30-15:30", 
-        "15:30-16:30", "16:30-17:30", "17:30-18:30", "18:30-20:30", 
-        "20:30-21:30", "21:30-22:30", "22:30-23:30", "23:30-00:30", 
-        "00:30-01:30"
+    // Mapping เวลาสำหรับคำนวณ Period
+    // ใช้เพื่อแปลงเวลา เช่น 07:30 -> Period 1
+    const timeSlotsObj = [
+        { period: 1, start: "07:30", end: "08:30" },
+        { period: 2, start: "08:30", end: "09:30" },
+        { period: 3, start: "09:30", end: "10:30" },
+        { period: 4, start: "10:30", end: "11:30" },
+        { period: 5, start: "11:30", end: "12:30" },
+        { period: 6, start: "12:30", end: "13:30" },
+        { period: 7, start: "13:30", end: "14:30" },
+        { period: 8, start: "14:30", end: "15:30" },
+        { period: 9, start: "15:30", end: "16:30" },
+        { period: 10, start: "16:30", end: "17:30" },
+        { period: 11, start: "17:30", end: "18:30" },
+        { period: 12, start: "18:30", end: "20:30" },
+        { period: 13, start: "20:30", end: "21:30" },
+        { period: 14, start: "21:30", end: "22:30" },
+        { period: 15, start: "22:30", end: "23:30" },
+        { period: 16, start: "23:30", end: "00:30" },
+        { period: 17, start: "00:30", end: "01:30" }
     ];
 
     // --- Initialization ---
@@ -256,7 +304,7 @@
         const endSelect = document.getElementById('time_end_booking');
         const roomId = document.getElementById("room_id").value;
 
-        // 1. ตั้งค่าวันที่เริ่มต้น และ ห้ามเลือกย้อนหลัง
+        // 1. ตั้งค่าวันที่เริ่มต้น
         const today = new Date().toISOString().split('T')[0];
         dateInput.setAttribute('min', today);
         
@@ -264,140 +312,191 @@
             dateInput.value = today;
         }
 
-        // 2. แสดงวันที่ไทยครั้งแรก
         updateTimelineDateDisplay(dateInput.value);
-
-        // 3. โหลดข้อมูล API
         fetchBookings(roomId);
 
         // --- Event Listeners ---
-        
-        // เมื่อเปลี่ยนวันที่
         dateInput.addEventListener('change', function() {
             filterBookingsByDate(this.value);
-            updateTimelineDateDisplay(this.value); // อัปเดตวันที่ไทย
-
-            // รีเซ็ต Dropdown
+            updateTimelineDateDisplay(this.value);
+            
             startSelect.value = "";
             endSelect.value = "";
             endSelect.disabled = true;
             updateStartOptions(); 
         });
 
-        // เมื่อเลือกเวลาเริ่ม
         startSelect.addEventListener('change', function() {
             updateEndOptions();
         });
     });
 
     // --- Core Functions ---
-
     function fetchBookings(roomId) {
         fetch("{{ url('/') }}/api/get_data_create_booking/" + roomId)
         .then(response => response.json())
         .then(result => {
             allBookings = Array.isArray(result) ? result : [result];
             const dateInput = document.getElementById('date_booking');
-            // กรองข้อมูลทันทีที่โหลดเสร็จ
             filterBookingsByDate(dateInput.value);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            renderSchedule([]);
+            processBookingsAndRender([]);
         });
     }
 
     function filterBookingsByDate(selectedDate) {
-        // กรองเฉพาะของวันที่เลือก
         dailyBookings = allBookings.filter(b => b.date_booking === selectedDate);
-        
-        // วาด Timeline ใหม่
-        renderSchedule(dailyBookings);
-        
-        // อัปเดต Dropdown เวลาเริ่ม
+        // เรียกใช้ฟังก์ชันประมวลผลตาราง (เวอร์ชั่น Table)
+        processBookingsAndRender(dailyBookings);
         updateStartOptions();
     }
 
     function updateTimelineDateDisplay(dateStr) {
         const displayElement = document.getElementById('timelineDateDisplay');
         if (!displayElement) return;
-
-        if (!dateStr) {
-            displayElement.textContent = "-";
-            return;
-        }
-
+        if (!dateStr) { displayElement.textContent = "-"; return; }
         const parts = dateStr.split('-');
         const year = parseInt(parts[0]) + 543;
         const month = parseInt(parts[1]);
         const day = parseInt(parts[2]);
-
-        const thaiMonths = [
-            "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-            "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-        ];
-
+        const thaiMonths = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
         displayElement.textContent = `${day} ${thaiMonths[month]} ${year}`;
     }
 
-    // --- Grid Rendering Function (Timeline) ---
-    function renderSchedule(schedule) {
-        const gridContainer = document.getElementById('scheduleGrid');
-        gridContainer.innerHTML = ''; 
-        
-        for (let i = 1; i <= 17; i++) {
-            let slotStatus = 'available';
-            let bookingData = null;
+    // --- Table Rendering Logic (Logic เดิมของคุณที่นำกลับมา) ---
 
-            // ตรวจสอบสถานะว่าง/ไม่ว่าง จาก dailyBookings
-            if (typeof dailyBookings !== 'undefined') {
-                 const timeStr = timeLabels[i-1].split('-')[0];
-                 const timeMin = timeToMinutes(timeStr);
-                 
-                 const busyBooking = dailyBookings.find(b => {
-                     const start = timeToMinutes(b.time_start_booking);
-                     const end = timeToMinutes(b.time_end_booking);
-                     return timeMin >= start && timeMin < end;
-                 });
-
-                 if (busyBooking) {
-                     slotStatus = 'occupied';
-                     bookingData = {
-                         subject: busyBooking.subject,
-                         teacher: busyBooking.name_professor,
-                         note: busyBooking.note
-                     };
-                 }
+    function timeToPeriod(time) {
+        const timeInMinutes = timeToMinutes(time);
+        for (let i = 0; i < timeSlotsObj.length; i++) {
+            const startInMinutes = timeToMinutes(timeSlotsObj[i].start);
+            const endInMinutes = timeToMinutes(timeSlotsObj[i].end);
+            if (timeInMinutes >= startInMinutes && timeInMinutes < endInMinutes) {
+                return timeSlotsObj[i].period;
             }
-
-            // สร้าง Card
-            const card = document.createElement('div');
-            const timeLabel = timeLabels[i-1];
-
-            if (slotStatus === 'available') {
-                // Card ว่าง
-                card.className = "flex flex-col items-center justify-center p-3 rounded-lg border border-gray-200 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700 text-center min-h-[80px]";
-                card.innerHTML = `
-                    <span class="text-xs font-medium text-gray-400 dark:text-gray-500 mb-1">คาบ ${i}</span>
-                    <span class="text-xs text-gray-400 dark:text-gray-500 font-mono">${timeLabel}</span>
-                `;
-            } else {
-                // Card ไม่ว่าง
-                card.className = "flex flex-col justify-center p-3 rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 text-center min-h-[80px] shadow-sm relative overflow-hidden group";
-
-                const subject = 'ไม่ว่าง';
-                
-                card.innerHTML = `
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
-                    <span class="text-xs text-red-400 dark:text-red-300 mb-1 font-mono">${timeLabel}</span>
-                    <span class="text-sm font-bold text-red-700 dark:text-red-200 truncate w-full px-1">${subject}</span>
-                `;
-            }
-            gridContainer.appendChild(card);
         }
+        return null;
     }
 
-    // --- Dropdown Logic ---
+    function calculateSpan(startTime, endTime) {
+        const startPeriod = timeToPeriod(startTime);
+        const endMinutes = timeToMinutes(endTime);
+        let endPeriod = null;
+        for (let i = 0; i < timeSlotsObj.length; i++) {
+             const slotEndMinutes = timeToMinutes(timeSlotsObj[i].end);
+             if (endMinutes === slotEndMinutes) {
+                 endPeriod = timeSlotsObj[i].period;
+                 break;
+             }
+        }
+        if (!endPeriod) endPeriod = timeToPeriod(endTime);
+        if (startPeriod && endPeriod) {
+            return endPeriod - startPeriod + 1;
+        }
+        return 1;
+    }
+
+    function processBookingsAndRender(bookings) {
+        const schedule = [];
+        const periodStatus = new Array(18).fill(null); 
+        
+        bookings.forEach(booking => {
+            const startPeriod = timeToPeriod(booking.time_start_booking);
+            const span = calculateSpan(booking.time_start_booking, booking.time_end_booking);
+            
+            if (startPeriod) {
+                periodStatus[startPeriod] = {
+                    period: startPeriod,
+                    status: "occupied",
+                    subject: booking.subject || "ไม่ระบุ",
+                    teacher: booking.name_professor || "ไม่ระบุ",
+                    note: booking.note || "",
+                    span: span,
+                    bookingData: booking
+                };
+                for (let i = 1; i < span; i++) {
+                    if (startPeriod + i <= 17) {
+                        periodStatus[startPeriod + i] = { skip: true };
+                    }
+                }
+            }
+        });
+        
+        for (let i = 1; i <= 17; i++) {
+            if (periodStatus[i] === null) {
+                schedule.push({ period: i, status: "available" });
+            } else if (!periodStatus[i].skip) {
+                schedule.push(periodStatus[i]);
+            }
+        }
+        renderScheduleTable(schedule);
+    }
+
+    function renderScheduleTable(schedule) {
+        const tbody = document.getElementById('scheduleTable');
+        tbody.innerHTML = ''; // Clear old data
+        
+        const tr = document.createElement('tr');
+        tr.className = 'h-32'; // ความสูงแถว
+
+        // Label Cell (ซ้ายสุด)
+        const labelCell = document.createElement('td');
+        labelCell.className = 'p-4 bg-gray-50 dark:bg-gray-900 font-medium text-center border border-gray-200 dark:border-gray-700 sticky left-0 z-10'; // Sticky
+        labelCell.textContent = 'สถานะ';
+        tr.appendChild(labelCell);
+
+        let skipNext = 0;
+        for (let i = 1; i <= 17; i++) {
+            if (skipNext > 0) {
+                skipNext--;
+                continue;
+            }
+
+            const slot = schedule.find(s => s.period === i) || { status: 'available', period: i };
+            const td = document.createElement('td');
+            td.className = 'p-2 align-middle border border-gray-200 dark:border-gray-700';
+
+            if (slot.span) {
+                td.setAttribute('colspan', slot.span);
+                skipNext = slot.span - 1;
+            }
+
+            if (slot.status === 'available') {
+                td.innerHTML = `
+                    <div class="w-full h-24 rounded-lg bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center">
+                        <span class="text-sm font-medium text-gray-300">ว่าง</span>
+                    </div>
+                `;
+            } else {
+                const displayNote = slot.note ? `<span class="text-[10px] text-red-500/60 dark:text-red-300/60 truncate">${slot.note}</span>` : '';
+                td.innerHTML = `
+                    <div class="w-full h-24 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 p-3 flex flex-col justify-center overflow-hidden">
+                        <span class="text-xs font-bold text-red-700 dark:text-red-400 leading-tight mb-1 truncate">${slot.subject}</span>
+                        <span class="text-[10px] text-red-600/70 dark:text-red-400/60 truncate">${slot.teacher}</span>
+                        ${displayNote}
+                    </div>
+                `;
+            }
+            tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+    }
+
+    // --- Helper Functions & Dropdown Logic (เหมือนเดิม) ---
+    function timeToMinutes(time) {
+        if(!time) return 0;
+        const [h, m] = time.split(':').map(Number);
+        if (h < 7) return (h + 24) * 60 + m; 
+        return h * 60 + m;
+    }
+    
+    function minutesToTime(minutes) {
+        let h = Math.floor(minutes / 60);
+        let m = minutes % 60;
+        if (h >= 24) h -= 24;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
 
     function isTimeOccupied(timeStr) {
         const checkTime = timeToMinutes(timeStr);
@@ -430,8 +529,6 @@
     function updateEndOptions() {
         const startSelect = document.getElementById('time_start_booking');
         const endSelect = document.getElementById('time_end_booking');
-        
-        // Reset
         endSelect.value = "";
         
         if (!startSelect.value) {
@@ -444,7 +541,6 @@
         const startMinutes = timeToMinutes(startTimeVal);
         let nextBookingStartMinutes = 99999;
 
-        // หาเวลาเริ่มของการจองถัดไป (เพื่อไม่ให้จองคร่อม)
         dailyBookings.forEach(booking => {
             const bStart = timeToMinutes(booking.time_start_booking);
             if (bStart > startMinutes) {
@@ -465,11 +561,11 @@
             let isDisabled = false;
 
             if (endIndex <= startIndex) {
-                isDisabled = true; // จบก่อนเริ่ม
+                isDisabled = true;
             } else if (endMinutes > nextBookingStartMinutes) {
-                isDisabled = true; // จองคร่อมคนอื่น
+                isDisabled = true;
             } else if (isTimeOccupied(timeVal) && timeVal !== minutesToTime(nextBookingStartMinutes)) {
-                 isDisabled = true; // จบในเวลาที่ไม่ว่าง
+                 isDisabled = true;
             }
 
             if (isDisabled) {
@@ -480,23 +576,6 @@
                 options[i].classList.remove('text-gray-300');
             }
         }
-    }
-
-    // --- Time Helper Functions ---
-
-    function timeToMinutes(time) {
-        if(!time) return 0;
-        const [h, m] = time.split(':').map(Number);
-        // กรณีข้ามวัน (หลังเที่ยงคืน) ให้ +24 ชม.
-        if (h < 7) return (h + 24) * 60 + m; 
-        return h * 60 + m;
-    }
-    
-    function minutesToTime(minutes) {
-        let h = Math.floor(minutes / 60);
-        let m = minutes % 60;
-        if (h >= 24) h -= 24;
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
 </script>
 @endsection
