@@ -56,6 +56,8 @@ Route::middleware(['auth', 'role:admin,officer'])->group(function () {
     Route::resource('semesters', 'SemestersController');
     Route::resource('faculties', 'FacultiesController');
     Route::resource('majors', 'MajorsController');
+    Route::get('admin/user/{id}/edit', 'BookingController@admin_edit_user')->name('admin.user.edit');
+    Route::post('admin/user/{id}/update', 'BookingController@admin_update_user')->name('admin.user.update');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์

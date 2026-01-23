@@ -442,4 +442,46 @@ class BookingController extends Controller
             ]);
         }
     }
+
+    public function admin_edit_user(Request $request, $user_id)
+    {
+        $data_user = User::with(['facultyDetail', 'majorDetail'])
+                        ->where('id', $user_id)
+                        ->firstOrFail();
+
+        // ดึงข้อมูลคณะ
+        $faculties = Faculty::all();
+
+        return view('admin.admin_edit_user', compact('data_user', 'faculties'));
+    }
+
+    public function admin_update_user(Request $request, $user_id)
+    {
+        $user = User::findOrFail($user_id);
+
+        $user->fullname = $request->fullname;
+        $user->name = $request->fullname;
+        $user->std_id = $request->std_id;
+        $user->email = $request->email;
+        $user->username = $request->username;
+        $user->faculty_id = $request->faculty;
+        $user->major_id = $request->major;
+        $user->status = $request->status;
+
+        // ถ้ามีการกรอก Password ใหม่มา ให้ทำการ Hash และบันทึก
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        // จัดการรูปภาพ
+        if ($request->hasFile('photo')) {
+            // ลบรูปเก่า (ถ้ามี)
+            if($user->photo) Storage::disk('public')->delete($user->photo);
+            $user->photo = $request->file('photo')->store('profile_photos', 'public');
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
+    }
 }

@@ -886,28 +886,30 @@ document.addEventListener('keydown', function(event) {
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-[#8c746a]">{{$item->username}}</td>
+                            <td class="px-6 py-4 text-sm">{{$item->username}}</td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-[11px] font-bold text-[#2d2421] dark:text-white">{{ $item->facultyDetail->name ?? '-' }}</span>
-                                    <span class="text-[10px] text-[#8c746a]">{{ $item->majorDetail->name ?? '-' }}</span>
+                                    <span class="text-[13px] font-bold text-[#2d2421] dark:text-white">{{ $item->facultyDetail->name ?? '-' }}</span>
+                                    <span class="text-[12px] text-[#8c746a]">{{ $item->majorDetail->name ?? '-' }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center gap-1.5  bg-accent-green/10 text-accent-green text-xs font-bold rounded-full">
                                     <span class="size-1.5 bg-accent-green rounded-full"></span>
                                     @if($item->status == 'Active')
-                                        อนุมัติแล้ว
+                                        <span class="text-[#26BD1A]">อนุมัติแล้ว</span>
                                     @else
-                                        ระงับบัญชี
+                                        <span class="text-[#F90606]">ระงับบัญชี</span>
                                     @endif
                                 </span>
                             </td>
                             <td class="px-8 py-4 text-right flex justify-end">
                                 <div class="flex items-center justify-end gap-1  group-hover:opacity-100 transition-opacity">
-                                    <button class="p-2 text-[#8c746a] hover:bg-blue-50 hover:text-blue-500 rounded-lg " title="แก้ไข">
-                                        <span class="material-symbols-outlined text-xl">edit</span>
-                                    </button>
+                                    <a href="{{ url('/admin/user') }}/{{ $item->id }}/edit">
+                                        <button class="p-2 text-[#8c746a] hover:bg-blue-50 hover:text-blue-500 rounded-lg " title="แก้ไข">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
