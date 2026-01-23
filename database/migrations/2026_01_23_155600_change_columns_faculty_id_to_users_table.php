@@ -16,8 +16,8 @@ class ChangeColumnsFacultyIdToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->renameColumn('faculty', 'faculty_id');
             $table->renameColumn('major', 'major_id');
-            $table->string('name')->nullable();
-            $table->string('email')->nullable();
+            $table->string('name')->nullable()->change();
+            $table->string('email')->nullable()->change();
         });
     }
 
