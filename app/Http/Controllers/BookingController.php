@@ -269,28 +269,15 @@ class BookingController extends Controller
 
     }
 
-    
-    // public function manage_user(Request $request)
-    // {
-    //     $keyword = $request->get('search');
-    //     $perPage = 25;
-
-    //     $data_user = Auth::user();
-
-    //     $user_active = User::where('status' , 'NOT LIKE',  'Pending')->latest()->paginate($perPage);
-    //     $user_pending  = User::where('status' ,  'Pending')->get();
-
-
-    //     return view('admin.manage_user', compact('user_active','user_pending'));
-    // }
-
     public function manage_user(Request $request)
     {
         $keyword = $request->get('search');
         $perPage = 25;
 
         // 1. จัดการ User Active
-        $queryActive = User::with(['facultyDetail', 'majorDetail'])->where('status', '!=', 'Pending');
+        $queryActive = User::with(['facultyDetail', 'majorDetail'])
+                        ->where('status', '!=', 'Pending')
+                        ->where('role', '!=', 'admin'); 
 
         if (!empty($keyword)) {
             $queryActive->where(function ($query) use ($keyword) {
@@ -302,11 +289,13 @@ class BookingController extends Controller
         $user_active = $queryActive->latest()->paginate($perPage);
 
         // 2. จัดการ User Pending
-        $user_pending  = User::with(['facultyDetail', 'majorDetail'])->where('status' , 'Pending')->get();
+        $user_pending = User::with(['facultyDetail', 'majorDetail'])
+                        ->where('status', 'Pending')
+                        ->get();
 
         $faculties = Faculty::all();
 
-        return view('admin.manage_user', compact('user_active', 'user_pending','faculties'));
+        return view('admin.manage_user', compact('user_active', 'user_pending', 'faculties'));
     }
 
     public function approve_member(Request $request) {
