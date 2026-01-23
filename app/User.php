@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Room;
 use App\Models\Booking;
+use App\Models\Faculty;
+use App\Models\Major;
 
 class User extends Authenticatable
 {
@@ -18,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','role', 'username', 'fullname', 'std_id', 'faculty', 'major', 'phone', 'photo', 'status'
+        'name', 'email', 'password','role', 'username', 'fullname', 'std_id', 'faculty_id', 'major_id', 'phone', 'photo', 'status','role',
     ];
 
     /**
@@ -42,5 +44,15 @@ class User extends Authenticatable
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'user_id'); 
+    }
+
+    public function facultyDetail()
+    {
+        return $this->belongsTo(Faculty::class, 'faculty_id', 'id');
+    }
+
+    public function majorDetail()
+    {
+        return $this->belongsTo(Major::class, 'major_id', 'id');
     }
 }

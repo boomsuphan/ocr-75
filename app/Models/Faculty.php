@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Major;
 use Illuminate\Database\Eloquent\Model;
 
 class Faculty extends Model
@@ -27,5 +27,9 @@ class Faculty extends Model
      */
     protected $fillable = ['name'];
 
+    public function majors()
+    {
+        return $this->hasMany(Major::class, 'faculty_id', 'id');
+    }
     
 }

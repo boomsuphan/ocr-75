@@ -15,6 +15,11 @@ use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Faculty;
+use App\Models\Major;
+
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
 {
@@ -265,22 +270,43 @@ class BookingController extends Controller
     }
 
     
+    // public function manage_user(Request $request)
+    // {
+    //     $keyword = $request->get('search');
+    //     $perPage = 25;
+
+    //     $data_user = Auth::user();
+
+    //     $user_active = User::where('status' , 'NOT LIKE',  'Pending')->latest()->paginate($perPage);
+    //     $user_pending  = User::where('status' ,  'Pending')->get();
+
+
+    //     return view('admin.manage_user', compact('user_active','user_pending'));
+    // }
+
     public function manage_user(Request $request)
     {
-         $keyword = $request->get('search');
+        $keyword = $request->get('search');
         $perPage = 25;
 
-  
+        // 1. จัดการ User Active
+        $queryActive = User::with(['facultyDetail', 'majorDetail'])->where('status', '!=', 'Pending');
 
-        $data_user = Auth::user();
+        if (!empty($keyword)) {
+            $queryActive->where(function ($query) use ($keyword) {
+                $query->where('username', 'LIKE', "%$keyword%")
+                      ->orWhere('fullname', 'LIKE', "%$keyword%")
+                      ->orWhere('std_id', 'LIKE', "%$keyword%");
+            });
+        }
+        $user_active = $queryActive->latest()->paginate($perPage);
 
-        $user_active = User::where('status' , 'NOT LIKE',  'Pending')->latest()->paginate($perPage);
-        $user_pending  = User::where('status' ,  'Pending')->get();
+        // 2. จัดการ User Pending
+        $user_pending  = User::with(['facultyDetail', 'majorDetail'])->where('status' , 'Pending')->get();
 
+        $faculties = Faculty::all();
 
-        return view('admin.manage_user', compact('user_active','user_pending'));
-
-
+        return view('admin.manage_user', compact('user_active', 'user_pending','faculties'));
     }
 
     public function approve_member(Request $request) {
@@ -290,11 +316,14 @@ class BookingController extends Controller
         
         if ($action === 'approve') {
             // อัพเดทสถานะเป็นอนุมัติ
-            User::where('id', $userId)->update(['status' => 'Active']);
+            User::where('id', $userId)->update([
+                'status' => 'Active',
+                'role'   => 'students',
+            ]);
             
             return response()->json(['success' => true]);
         } else {
-            // อัพเดทสถานะเป็นปฏิเสธ พร้อมเหตุผล
+            // อัพเดทสถานะเป็นปฏิเสธ
             User::where('id', $userId)->update([
                 'status' => 'Inactive',
             ]);
@@ -306,7 +335,10 @@ class BookingController extends Controller
         try {
             // อัพเดทสมาชิกทั้งหมดที่รอการอนุมัติ
             $updated = User::where('status', 'Pending')
-                ->update(['status' => 'Active']);
+                ->update([
+                'status' => 'Active',
+                'role'   => 'students',
+            ]);
             
             return response()->json([
                 'success' => true,
@@ -322,37 +354,103 @@ class BookingController extends Controller
     }
     // เพิ่มใน BookingController
 
-public function add_member(Request $request) {
+    // public function add_member(Request $request) {
 
+    //     $request['faculty_id'] = $request['faculty'] ;
+    //     $request['major_id'] = $request['major'] ;
 
-        $fullname = $request['fullname'];
-        $std_id = $request['std_id'];
-        $faculty = $request['faculty'];
-        $major = $request['major'];
-        $email = $request['email'];
-        $username = $request['username'];
-        $password = uniqid();
+    //     $fullname = $request['fullname'];
+    //     $std_id = $request['std_id'];
+    //     $faculty = $request['faculty_id'];
+    //     $major = $request['major_id'];
+    //     $email = $request['email'];
+    //     $username = $request['username'];
+    //     $password = uniqid();
         
    
-        // สร้างสมาชิกใหม่
-        $user = new User();
-        $user->fullname = $fullname;
-        $user->std_id = $std_id;
-        $user->faculty = $faculty;
-        $user->major = $major;
-        $user->email = $email;
-        $user->username = $username;
-        $user->password = $password;
-        // $user->photo = $photoPath;
-        $user->status = $request->status ?? 'Pending';
-        $user->role = 'นักศึกษา'; // หรือตามที่ต้องการ
-        $user->save();
+    //     // สร้างสมาชิกใหม่
+    //     $user = new User();
+    //     $user->fullname = $fullname;
+    //     $user->std_id = $std_id;
+    //     $user->faculty = $faculty;
+    //     $user->major = $major;
+    //     $user->email = $email;
+    //     $user->username = $username;
+    //     $user->password = $password;
+    //     // $user->photo = $photoPath;
+    //     $user->status = $request->status ?? 'Pending';
+    //     $user->role = 'นักศึกษา'; // หรือตามที่ต้องการ
+    //     $user->save();
         
-        return response()->json([
-            'success' => true,
-            'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว',
-            'user_id' => $user->id
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว',
+    //         'user_id' => $user->id
+    //     ]);
+        
+    // }
+
+    public function add_member(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'required|string|max:255',
+            'std_id'   => 'required|string|max:20|unique:users,std_id',
+            'faculty'  => 'required|exists:faculties,id', 
+            'major'    => 'required|exists:majors,id',  
+            'email'    => 'nullable|string|max:255', 
+            'username' => 'required|string|max:50|unique:users,username',
+            'password' => 'required|min:8',
+            'photo'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'std_id.unique'   => 'รหัสนักศึกษานี้มีในระบบแล้ว',
+            'username.unique' => 'Username นี้ถูกใช้งานแล้ว',
+            'faculty.exists'  => 'ไม่พบข้อมูลคณะที่เลือก',
+            'photo.max'       => 'รูปภาพต้องมีขนาดไม่เกิน 2MB',
         ]);
-        
-}
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ]);
+        }
+
+        // 2. จัดการรูปภาพ
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('profile_photos', 'public');
+        }
+
+        // 3. บันทึกข้อมูล
+        try {
+            $user = new User();
+            $user->fullname = $request->fullname;
+            $user->name = $request->fullname;
+            $user->std_id   = $request->std_id;
+            $user->faculty_id  = $request->faculty; 
+            $user->major_id    = $request->major;
+            $user->email    = $request->email; 
+            
+            $user->username = $request->username;
+            $user->password = Hash::make($request->password);
+            
+            $user->photo    = $photoPath;
+            $user->status   = $request->status; 
+            $user->role     = 'students'; 
+            
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว',
+                'user_id' => $user->id
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage()
+            ]);
+        }
+    }
 }

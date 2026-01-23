@@ -28,7 +28,7 @@
             @foreach($user_pending as $item)
             <div class="group flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] bg-white dark:bg-[#251d1a] shadow-sm hover:shadow-md hover:border-primary/30 transition-all">
                 <div class="size-14 rounded-xl bg-cover bg-center shrink-0 border border-gray-100 dark:border-gray-700"
-                    style="background-image: url('{{ $item->photo ?? 'default-avatar.jpg' }}');"></div>
+                    style="background-image: url('{{ url('storage/' . ($item->photo ?? 'default-avatar.jpg')) }}');"></div>
                 <div class="flex-1 min-w-0">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1">
                         <div>
@@ -38,17 +38,17 @@
                             </p>
                         </div>
                         <div class="text-left sm:text-right mt-1 sm:mt-0">
-                            <p class="text-xs font-bold text-[#2d2421] dark:text-gray-300">{{ $item->faculty }}</p>
-                            <p class="text-[11px] text-[#8c746a]">{{ $item->major }}</p>
+                            <p class="text-xs font-bold text-[#2d2421] dark:text-gray-300">{{ $item->facultyDetail->name }}</p>
+                            <p class="text-[11px] text-[#8c746a]">{{ $item->majorDetail->name }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#f3e9e5] dark:border-[#3d2f2a]">
-                    <button onclick="openRejectModal('{{ $item->id }}', '{{ $item->fullname }}', '{{ $item->std_id }}', '{{ $item->faculty }}', '{{ $item->major }}', '{{ $item->photo }}')"
+                    <button onclick="openRejectModal('{{ $item->id }}', '{{ $item->fullname }}', '{{ $item->std_id }}', '{{ $item->facultyDetail->name }}', '{{ $item->majorDetail->name }}', '{{ $item->photo }}')"
                         class="flex-1 sm:flex-none px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-transparent text-gray-500 hover:text-accent-red hover:border-accent-red/30 hover:bg-accent-red/5 text-xs font-bold transition-all">
                         ปฏิเสธ
                     </button>
-                    <button onclick="openApproveModal('{{ $item->id }}', '{{ $item->fullname }}', '{{ $item->std_id }}', '{{ $item->faculty }}', '{{ $item->major }}', '{{ $item->photo }}')"
+                    <button onclick="openApproveModal('{{ $item->id }}', '{{ $item->fullname }}', '{{ $item->std_id }}', '{{ $item->facultyDetail->name }}', '{{ $item->majorDetail->name }}', '{{ $item->photo }}')"
                         class="flex-1 sm:flex-none px-5 py-2 rounded-xl bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20 text-xs font-bold transition-all">
                         อนุมัติ
                     </button>
@@ -70,11 +70,11 @@
     </div>
 </div>
 
-<!-- Modal เพิ่มสมาชิกใหม่ -->
 <div id="addMemberModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
     <div onclick="closeAddMemberModal()" class="fixed inset-0 bg-[#2d2421]/60 backdrop-blur-sm transition-opacity"></div>
+    
     <div class="relative w-full max-w-4xl transform overflow-hidden rounded-3xl bg-white dark:bg-[#1a1513] text-left shadow-2xl transition-all border border-[#f3e9e5] dark:border-[#3d2f2a] max-h-[90vh] flex flex-col">
-        <!-- Header -->
+        
         <div class="flex items-center justify-between p-6 border-b border-[#f3e9e5] dark:border-[#3d2f2a] sticky top-0 bg-white dark:bg-[#1a1513] z-10">
             <div>
                 <h3 class="text-2xl font-black text-[#2d2421] dark:text-white">เพิ่มสมาชิกใหม่</h3>
@@ -85,12 +85,10 @@
             </button>
         </div>
 
-        <!-- Body - Scrollable -->
         <div class="overflow-y-auto custom-scrollbar p-6 bg-[#faf6f4]/30 dark:bg-[#1f1a17]">
-            <form id="addMemberForm" class="flex flex-col gap-6">
-                @csrf
+            <form id="addMemberForm" class="flex flex-col gap-6" enctype="multipart/form-data">
+                @csrf 
                 
-                <!-- ข้อมูลส่วนตัว -->
                 <div class="bg-white dark:bg-[#251d1a] rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] p-6">
                     <div class="flex items-center gap-2 pb-4 mb-4 border-b border-[#f3e9e5] dark:border-[#3d2f2a]">
                         <span class="material-symbols-outlined text-primary">person</span>
@@ -115,29 +113,40 @@
                         </label>
                         
                         <label class="flex flex-col gap-2">
-                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">คณะ <span class="text-red-500">*</span></span>
-                            <select name="faculty" required
-                                class="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none cursor-pointer">
-                                <option value="" disabled selected>เลือกคณะ</option>
-                                <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
-                                <option value="วิศวกรรมศาสตร์">วิศวกรรมศาสตร์</option>
-                                <option value="ศิลปศาสตร์">ศิลปศาสตร์</option>
-                                <option value="บริหารธุรกิจ">บริหารธุรกิจ</option>
-                                <option value="นิเทศศาสตร์">นิเทศศาสตร์</option>
-                            </select>
+                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">
+                                คณะ <span class="text-red-500">*</span>
+                            </span>
+                            <div class="relative">
+                                <select id="modal_faculty" name="faculty" required
+                                    class="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none cursor-pointer appearance-none">
+                                    <option value="" disabled selected>เลือกคณะ</option>
+                                    @foreach($faculties as $faculty)
+                                        <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#2d2421] dark:text-white">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                </div>
+                            </div>
                         </label>
-                        
+
                         <label class="flex flex-col gap-2">
-                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">สาขาวิชา <span class="text-red-500">*</span></span>
-                            <input name="major" required
-                                class="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-[#8c746a]" 
-                                placeholder="ระบุสาขาวิชา" 
-                                type="text" />
+                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">
+                                สาขาวิชา <span class="text-red-500">*</span>
+                            </span>
+                            <div class="relative">
+                                <select id="modal_major" name="major" required disabled
+                                    class="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <option value="" disabled selected>กรุณาเลือกคณะก่อน</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#2d2421] dark:text-white">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                                </div>
+                            </div>
                         </label>
                     </div>
                 </div>
 
-                <!-- รูปถ่าย -->
                 <div class="bg-white dark:bg-[#251d1a] rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] p-6">
                     <div class="flex items-center gap-2 pb-4 mb-4 border-b border-[#f3e9e5] dark:border-[#3d2f2a]">
                         <span class="material-symbols-outlined text-primary">badge</span>
@@ -145,8 +154,8 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-4 items-start">
-                        <div id="photoPreview" class="size-24 shrink-0 bg-[#faf6f4] dark:bg-[#342a26] rounded-xl flex items-center justify-center border border-[#f3e9e5] dark:border-[#3d2f2a] overflow-hidden">
-                            <span class="material-symbols-outlined text-4xl text-[#8c746a]">account_circle</span>
+                        <div id="photoPreviewContainer" class="size-24 shrink-0 bg-[#faf6f4] dark:bg-[#342a26] rounded-xl flex items-center justify-center border border-[#f3e9e5] dark:border-[#3d2f2a] overflow-hidden bg-cover bg-center bg-no-repeat">
+                            <span id="photoPlaceholder" class="material-symbols-outlined text-4xl text-[#8c746a]">account_circle</span>
                         </div>
                         <div class="flex-1 w-full">
                             <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-[#f3e9e5] dark:border-[#3d2f2a] rounded-xl cursor-pointer bg-[#faf6f4] dark:bg-[#342a26] hover:bg-white dark:hover:bg-[#251d1a] transition-colors group">
@@ -161,11 +170,17 @@
                     </div>
                 </div>
 
-                <!-- ข้อมูลบัญชีผู้ใช้ -->
                 <div class="bg-white dark:bg-[#251d1a] rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] p-6">
-                    <div class="flex items-center gap-2 pb-4 mb-4 border-b border-[#f3e9e5] dark:border-[#3d2f2a]">
-                        <span class="material-symbols-outlined text-primary">lock</span>
-                        <h4 class="text-lg font-bold text-[#2d2421] dark:text-white">ข้อมูลบัญชีผู้ใช้</h4>
+                    <div class="flex items-center justify-between pb-4 mb-4 border-b border-[#f3e9e5] dark:border-[#3d2f2a]">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">lock</span>
+                            <h4 class="text-lg font-bold text-[#2d2421] dark:text-white">ข้อมูลบัญชีผู้ใช้</h4>
+                        </div>
+                        <button type="button" onclick="generateCredentials()" 
+                            class="text-sm text-primary hover:text-primary-dark font-bold flex items-center gap-1 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">autorenew</span>
+                            สุ่มข้อมูลอัตโนมัติ
+                        </button>
                     </div>
                     
                     <div class="grid grid-cols-1 gap-4">
@@ -173,7 +188,7 @@
                             <span class="text-sm font-bold text-[#2d2421] dark:text-white">อีเมล <span class="text-red-500">*</span></span>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a] text-[20px]">email</span>
-                                <input name="email" required type="email"
+                                <input name="email" type="email"
                                     class="w-full h-11 pl-12 pr-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-[#8c746a]" 
                                     placeholder="กรอกอีเมลของคุณ" />
                             </div>
@@ -183,7 +198,7 @@
                             <span class="text-sm font-bold text-[#2d2421] dark:text-white">Username <span class="text-red-500">*</span></span>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a] text-[20px]">alternate_email</span>
-                                <input name="username" required
+                                <input id="gen_username" name="username" required
                                     class="w-full h-11 pl-12 pr-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-[#8c746a]" 
                                     placeholder="ตั้งชื่อผู้ใช้งาน (ภาษาอังกฤษ)" 
                                     type="text" />
@@ -195,7 +210,7 @@
                                 <span class="text-sm font-bold text-[#2d2421] dark:text-white">รหัสผ่าน <span class="text-red-500">*</span></span>
                                 <div class="relative">
                                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a] text-[20px]">vpn_key</span>
-                                    <input name="password" required type="password"
+                                    <input id="gen_password" name="password" required type="text"
                                         class="w-full h-11 pl-12 pr-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-[#8c746a]" 
                                         placeholder="อย่างน้อย 8 ตัวอักษร" />
                                 </div>
@@ -205,7 +220,7 @@
                                 <span class="text-sm font-bold text-[#2d2421] dark:text-white">ยืนยันรหัสผ่าน <span class="text-red-500">*</span></span>
                                 <div class="relative">
                                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a] text-[20px]">check_circle</span>
-                                    <input name="password_confirmation" required type="password"
+                                    <input id="gen_confirm" name="password_confirmation" required type="text"
                                         class="w-full h-11 pl-12 pr-4 rounded-xl bg-white dark:bg-[#342a26] border border-[#f3e9e5] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-[#8c746a]" 
                                         placeholder="กรอกรหัสผ่านอีกครั้ง" />
                                 </div>
@@ -214,7 +229,6 @@
                     </div>
                 </div>
 
-                <!-- สถานะ -->
                 <div class="bg-white dark:bg-[#251d1a] rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] p-6">
                     <div class="flex items-center gap-2 pb-4 mb-4 border-b border-[#f3e9e5] dark:border-[#3d2f2a]">
                         <span class="material-symbols-outlined text-primary">toggle_on</span>
@@ -231,13 +245,12 @@
             </form>
         </div>
 
-        <!-- Footer -->
         <div class="flex gap-3 bg-white dark:bg-[#251d1a] px-6 py-4 border-t border-[#f3e9e5] dark:border-[#3d2f2a] sticky bottom-0">
             <button onclick="closeAddMemberModal()" 
                 class="flex-1 rounded-xl border border-[#e5e7eb] dark:border-[#3d2f2a] bg-white dark:bg-[#342a26] py-2.5 text-sm font-bold text-[#2d2421] dark:text-white shadow-sm hover:bg-gray-50 dark:hover:bg-[#4d3c36] transition-all">
                 ยกเลิก
             </button>
-            <button onclick="submitAddMember()" 
+            <button onclick="submitAddMember(this)" 
                 class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary-hover transition-all flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-[20px]">person_add</span>
                 เพิ่มสมาชิก
@@ -245,6 +258,169 @@
         </div>
     </div>
 </div>
+
+<script>
+    // 1. ฟังก์ชันเปิด-ปิด Modal
+    function openAddMemberModal() {
+        document.getElementById('addMemberModal').classList.remove('hidden');
+        document.getElementById('addMemberModal').classList.add('flex');
+    }
+    function closeAddMemberModal() {
+        document.getElementById('addMemberModal').classList.add('hidden');
+        document.getElementById('addMemberModal').classList.remove('flex');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 2. จัดการรูปภาพ (Preview)
+        const photoInput = document.getElementById('photoInput');
+        const photoPreviewContainer = document.getElementById('photoPreviewContainer');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+
+        if(photoInput) {
+            photoInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // ซ่อน icon
+                        photoPlaceholder.style.display = 'none';
+                        // ใส่รูปเป็น background-image
+                        photoPreviewContainer.style.backgroundImage = `url('${e.target.result}')`;
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    photoPlaceholder.style.display = 'block';
+                    photoPreviewContainer.style.backgroundImage = 'none';
+                }
+            });
+        }
+
+        // 3. จัดการเลือกคณะ -> สาขา (Dynamic Dropdown)
+        const modalFacultySelect = document.getElementById('modal_faculty');
+        const modalMajorSelect = document.getElementById('modal_major');
+
+        if (modalFacultySelect && modalMajorSelect) {
+            modalFacultySelect.addEventListener('change', function() {
+                const facultyId = this.value;
+                modalMajorSelect.innerHTML = '<option disabled selected value="">กำลังโหลดข้อมูล...</option>';
+                modalMajorSelect.disabled = true;
+
+                if (facultyId) {
+                    fetch(`{{ url("/") }}/api/majors/${facultyId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            modalMajorSelect.innerHTML = '<option disabled selected value="">เลือกสาขาวิชา</option>';
+                            if(data.length > 0){
+                                data.forEach(major => {
+                                    const option = document.createElement('option');
+                                    option.value = major.id;
+                                    option.textContent = major.name;
+                                    modalMajorSelect.appendChild(option);
+                                });
+                                modalMajorSelect.disabled = false; 
+                            } else {
+                                modalMajorSelect.innerHTML = '<option disabled selected value="">ไม่พบสาขาวิชา</option>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            modalMajorSelect.innerHTML = '<option disabled selected value="">เกิดข้อผิดพลาด</option>';
+                        });
+                } else {
+                    modalMajorSelect.innerHTML = '<option disabled selected value="">กรุณาเลือกคณะก่อน</option>';
+                }
+            });
+        }
+    });
+
+    // 4. สุ่ม Username / Password
+    function generateCredentials() {
+        const usernameInput = document.getElementById('gen_username');
+        const passwordInput = document.getElementById('gen_password');
+        const confirmInput = document.getElementById('gen_confirm');
+
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const newUsername = 'user' + randomNum;
+
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let newPassword = "";
+        for (let i = 0; i < 8; i++) {
+            newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        usernameInput.value = newUsername;
+        passwordInput.value = newPassword;
+        confirmInput.value = newPassword;
+    }
+
+    // 5. บันทึกข้อมูล (Submit Form)
+    function submitAddMember(btn) {
+        const form = document.getElementById('addMemberForm');
+        const formData = new FormData(form);
+        
+        // ตรวจสอบความถูกต้องเบื้องต้น
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        // เช็ค Password ตรงกันไหม
+        const password = formData.get('password');
+        const passwordConfirm = formData.get('password_confirmation');
+        
+        if (password !== passwordConfirm) {
+            alert('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+            return;
+        }
+        
+        // แปลงสถานะจาก Checkbox เป็น Text
+        const autoApprove = document.querySelector('input[name="auto_approve"]').checked;
+        formData.set('status', autoApprove ? 'Active' : 'Pending');
+        
+        // UI Loading
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> กำลังบันทึก...';
+        
+        // ส่งข้อมูลไปยัง API
+        fetch("{{ url('/') }}/api/add_member", {
+            method: 'POST',
+            headers: {
+                // ถ้ามี CSRF Token ใน meta tag ให้ใช้ document.querySelector... แต่ในนี้ผมใส่ @csrf hidden input แล้ว มันจะไปกับ FormData อัตโนมัติ (แต่ถ้า API route แยก อาจต้องใช้ header นี้)
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('เพิ่มสมาชิกเรียบร้อยแล้ว');
+                closeAddMemberModal();
+                location.reload();
+            } else {
+                // กรณี Validation Error จาก Laravel จะส่งกลับมาเป็น errors object
+                if(data.errors) {
+                    let errorMsg = "";
+                    for (const [key, value] of Object.entries(data.errors)) {
+                        errorMsg += value + "\n";
+                    }
+                    alert('ตรวจสอบข้อมูล:\n' + errorMsg);
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'Unknown error'));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    }
+</script>
+
 <style type="text/tailwindcss">
     @layer base {
             body {
@@ -293,127 +469,52 @@
     </div>
 
     <script>
-        // เพิ่มในส่วน <script> ของ blade file
+    document.addEventListener('DOMContentLoaded', function() {
+        // ใช้ ID ที่ตั้งใหม่ใน Modal
+        const modalFacultySelect = document.getElementById('modal_faculty');
+        const modalMajorSelect = document.getElementById('modal_major');
 
-// ฟังก์ชันเปิด Modal เพิ่มสมาชิก
-function openAddMemberModal() {
-    const modal = document.getElementById('addMemberModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    
-    // Reset form
-    document.getElementById('addMemberForm').reset();
-    document.getElementById('photoPreview').innerHTML = '<span class="material-symbols-outlined text-4xl text-[#8c746a]">account_circle</span>';
-}
+        if (modalFacultySelect && modalMajorSelect) {
+            modalFacultySelect.addEventListener('change', function() {
+                const facultyId = this.value;
 
-// ฟังก์ชันปิด Modal เพิ่มสมาชิก
-function closeAddMemberModal() {
-    const modal = document.getElementById('addMemberModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    document.body.style.overflow = 'auto';
-}
+                // 1. เคลียร์ค่าและปิดการใช้งานช่องสาขา
+                modalMajorSelect.innerHTML = '<option disabled selected value="">กำลังโหลดข้อมูล...</option>';
+                modalMajorSelect.disabled = true;
 
-// ฟังก์ชัน Preview รูปภาพ
-document.addEventListener('DOMContentLoaded', function() {
-    const photoInput = document.getElementById('photoInput');
-    const photoPreview = document.getElementById('photoPreview');
-    
-    if (photoInput) {
-        photoInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // ตรวจสอบขนาดไฟล์ (2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('ไฟล์มีขนาดใหญ่เกิน 2MB');
-                    photoInput.value = '';
-                    return;
+                if (facultyId) {
+                    // 2. เรียก API ไปดึงข้อมูลสาขา (ใช้ Route เดิมที่มีอยู่)
+                    fetch(`{{ url('/api/majors') }}/${facultyId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // 3. ใส่ข้อมูลลงใน Dropdown
+                            modalMajorSelect.innerHTML = '<option disabled selected value="">เลือกสาขาวิชา</option>';
+                            
+                            if(data.length > 0){
+                                data.forEach(major => {
+                                    const option = document.createElement('option');
+                                    option.value = major.id;
+                                    option.textContent = major.name;
+                                    modalMajorSelect.appendChild(option);
+                                });
+                                modalMajorSelect.disabled = false; // ปลดล็อก
+                            } else {
+                                modalMajorSelect.innerHTML = '<option disabled selected value="">ไม่พบสาขาวิชา</option>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            modalMajorSelect.innerHTML = '<option disabled selected value="">เกิดข้อผิดพลาด</option>';
+                        });
+                } else {
+                    modalMajorSelect.innerHTML = '<option disabled selected value="">กรุณาเลือกคณะก่อน</option>';
                 }
-                
-                // ตรวจสอบประเภทไฟล์
-                if (!file.type.match('image.*')) {
-                    alert('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
-                    photoInput.value = '';
-                    return;
-                }
-                
-                // แสดง Preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoPreview.style.backgroundImage = `url('${e.target.result}')`;
-                    photoPreview.style.backgroundSize = 'cover';
-                    photoPreview.style.backgroundPosition = 'center';
-                    photoPreview.innerHTML = '';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-});
-
-// ฟังก์ชันส่งข้อมูลเพิ่มสมาชิก
-function submitAddMember() {
-    const form = document.getElementById('addMemberForm');
-    const formData = new FormData(form);
-    
-    // Validate form
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-    
-    // ตรวจสอบรหัสผ่านตรงกันหรือไม่
-    const password = formData.get('password');
-    const passwordConfirm = formData.get('password_confirmation');
-    
-    if (password !== passwordConfirm) {
-        alert('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
-        return;
-    }
-    
-    // กำหนดสถานะตาม checkbox
-    const autoApprove = formData.get('auto_approve');
-    formData.set('status', autoApprove ? 'Active' : 'Pending');
-    
-    // แสดง Loading
-    const submitBtn = event.target;
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> กำลังบันทึก...';
-    
-    // ส่งข้อมูล
-    fetch("{{ url('/') }}/api/add_member", {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+            });
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            alert('เพิ่มสมาชิกเรียบร้อยแล้ว');
-            closeAddMemberModal();
-            location.reload();
-        } else {
-            alert('เกิดข้อผิดพลาด: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
     });
-}
+</script>
+
+<script>
 
 // ปิด Modal เมื่อกด ESC (อัพเดทเพิ่ม addMemberModal)
 document.addEventListener('keydown', function(event) {
@@ -442,16 +543,16 @@ document.addEventListener('keydown', function(event) {
     <div class="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
         @foreach($user_pending as $item)
         <div class="min-w-[340px] snap-start bg-white dark:bg-[#251d1a] border border-primary/20 rounded-2xl p-4 shadow-sm flex items-center gap-4">
-            <div class="size-14 rounded-xl bg-cover bg-center border border-primary/10 shrink-0" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGoCSymYDRHQQy5hHdxEzLsgKwbaet_ogV04Dsr4FsmGsnoT68Iz1G2hsawhloQSPTzpD9NX76XbZ2QHJwTl9ZACscS2wQg8wnBKyFH4Bv4oyXlQveQM1uywajUXV3hJIVO7xMVnRQiSZDHXOxYrLId2F_RF9EnrJ6EIXMFuwGGlLbXlrypoYNKn1MdMsc4uPBYSSoO3A8hDVKqztYtPi-K9Z23bLS-sESqhyoh4Bg8f0sOhNWyIS18KxeK_ZNaLzRGlFh35mQXSk');"></div>
+            <div class="size-14 rounded-xl bg-cover bg-center border border-primary/10 shrink-0" style="background-image: url('{{ url('storage/' . ($item->photo ?? 'default-avatar.jpg')) }}');"></div>
             <div class="flex-1 min-w-0">
                 <p class="text-sm font-black text-[#2d2421] dark:text-white truncate">{{$item->fullname}}</p>
-                <p class="text-[11px] text-primary font-bold">{{$item->std_id}} • {{$item->major}}</p>
+                <p class="text-[11px] text-primary font-bold">{{$item->std_id}} • {{ $item->majorDetail->name ?? '-' }}</p>
                 <div class="flex gap-2 mt-2">
-                    <button onclick="openRejectModal('{{$item->id}}', '{{$item->fullname}}', '{{$item->std_id}}', '{{$item->faculty}}', '{{$item->major}}', '{{$item->photo}}')"
+                    <button onclick="openRejectModal('{{$item->id}}', '{{$item->fullname}}', '{{$item->std_id}}', '{{$item->facultyDetail->name}}', '{{$item->majorDetail->name}}', '{{$item->photo}}')"
                         class="flex-1 py-1.5 bg-accent-red/10 text-accent-red hover:bg-accent-red rounded-lg text-[11px] font-bold transition-all border border-accent-red/20 hover:text-red-600">
                         ปฏิเสธ
                     </button>
-                    <button onclick="openApproveModal('{{$item->id}}', '{{$item->fullname}}', '{{$item->std_id}}', '{{$item->faculty}}', '{{$item->major}}', '{{$item->photo}}')"
+                    <button onclick="openApproveModal('{{$item->id}}', '{{$item->fullname}}', '{{$item->std_id}}', '{{$item->facultyDetail->name}}', '{{$item->majorDetail->name}}', '{{$item->photo}}')"
                         class="flex-1 py-1.5 bg-primary text-white hover:bg-primary-hover rounded-lg text-[11px] font-bold transition-all">
                         อนุมัติ
                     </button>
@@ -622,7 +723,9 @@ document.addEventListener('keydown', function(event) {
             document.getElementById('approveStdId').textContent = stdId;
             document.getElementById('approveFaculty').textContent = faculty;
             document.getElementById('approveDepartment').textContent = department;
-            document.getElementById('approveProfileImage').style.backgroundImage = `url('${profileImage}')`;
+            const imageUrl = profileImage ? `{{ url('/') }}/storage/${profileImage}` : '/images/default-avatar.jpg';
+
+            document.getElementById('approveProfileImage').style.backgroundImage = `url("${imageUrl}")`;
 
             const modal = document.getElementById('approveModal');
             modal.classList.remove('hidden');
@@ -646,7 +749,8 @@ document.addEventListener('keydown', function(event) {
             document.getElementById('rejectStdId').textContent = stdId;
             document.getElementById('rejectFaculty').textContent = faculty;
             document.getElementById('rejectDepartment').textContent = department;
-            document.getElementById('rejectProfileImage').style.backgroundImage = `url('${profileImage}')`;
+            const imageUrl = profileImage ? `{{ url('/') }}/storage/${profileImage}` : '/images/default-avatar.jpg';
+            document.getElementById('rejectProfileImage').style.backgroundImage = `url("${imageUrl}")`;
 
             const modal = document.getElementById('rejectModal');
             modal.classList.remove('hidden');
@@ -736,20 +840,21 @@ document.addEventListener('keydown', function(event) {
     <section class="space-y-6 flex-1">
         <div class="flex flex-col lg:flex-row gap-6 items-center justify-between">
             <h3 class="text-xl font-bold text-[#2d2421] dark:text-white uppercase tracking-wide">สมาชิกที่อนุมัติแล้ว</h3>
-            <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                <div class="relative flex-1 min-w-[300px]">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a]">search</span>
-                    <input class="w-full pl-12 pr-4 py-2.5 bg-white dark:bg-[#251d1a] border border-[#f3e9e5] dark:border-[#3d2f2a] rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="ค้นหาชื่อ, รหัส หรือ Username..." type="text" />
+            <form method="GET" action="{{ url()->current() }}">
+                <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                    <div class="relative flex-1 min-w-[300px]">
+                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a]">search</span>
+                        
+                        <input 
+                            name="search" 
+                            value="{{ request('search') }}"
+                            class="w-full pl-12 pr-4 py-2.5 bg-white dark:bg-[#251d1a] border border-[#f3e9e5] dark:border-[#3d2f2a] rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                            placeholder="ค้นหาชื่อ รหัสนักศึกษา หรือ Username..." 
+                            type="text" 
+                        />
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button class="p-2.5 bg-white dark:bg-[#251d1a] border border-[#f3e9e5] dark:border-[#3d2f2a] rounded-xl text-[#8c746a] hover:text-primary transition-colors shadow-sm">
-                        <span class="material-symbols-outlined">filter_list</span>
-                    </button>
-                    <button class="p-2.5 bg-white dark:bg-[#251d1a] border border-[#f3e9e5] dark:border-[#3d2f2a] rounded-xl text-[#8c746a] hover:text-primary transition-colors shadow-sm">
-                        <span class="material-symbols-outlined">sort</span>
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
         <div class="bg-white dark:bg-[#251d1a] rounded-2xl border border-[#f3e9e5] dark:border-[#3d2f2a] overflow-hidden shadow-sm">
             <div class="overflow-x-auto">
@@ -757,8 +862,8 @@ document.addEventListener('keydown', function(event) {
                     <thead>
                         <tr class="bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">ข้อมูลสมาชิก</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">คณะ/สาขา</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">Username</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">คณะ/สาขา</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">สถานะ</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400 text-right">การจัดการ</th>
                         </tr>
@@ -768,7 +873,7 @@ document.addEventListener('keydown', function(event) {
                         <tr class="hover:bg-orange-50/30 dark:hover:bg-orange-900/5 transition-colors group">
                             <td class="px-8 py-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="size-10 rounded-lg bg-cover bg-center border border-primary/10" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFDu-ZSXyFtvnD_OLOgSlDrqMW8Cqyh8ldQy8dZGDja5xBeB65RAi9nQGlb-4gPCv6aaDSCGISIggTTHBDbU__TMcs-nBpD17bRqHeZ2_Guw_2M6gM7eAx4ZB6pCYVALS_gKsMFsBGiZ8nFKlR0Y95UOEHcFaQID2noBeXaT2lSPZ38S4xiVwSARWWQuBMG0fxlNZJqwv0QFep4-7EhT9NObqWLT4ep9pGb62yCFXIrNRSAryTZJNj9ZOT7jfOQ9rNGqNMH08xEJY');"></div>
+                                    <div class="size-10 rounded-lg bg-cover bg-center border border-primary/10" style="background-image: url('{{ url('storage/' . ($item->photo ?? 'default-avatar.jpg')) }}');"></div>
                                     <div>
                                         <p class="text-sm font-bold text-[#2d2421] dark:text-white">{{$item->fullname}}</p>
                                         @if($item->role == 'อาจารย์')
@@ -780,21 +885,20 @@ document.addEventListener('keydown', function(event) {
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[11px] font-bold text-[#2d2421] dark:text-white">{{$item->faculty}}</span>
-                                    <span class="text-[10px] text-[#8c746a]">{{$item->major}}</span>
-                                </div>
-                            </td>
                             <td class="px-6 py-4 text-sm text-[#8c746a]">{{$item->username}}</td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-accent-green/10 text-accent-green text-xs font-bold rounded-full">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[11px] font-bold text-[#2d2421] dark:text-white">{{ $item->facultyDetail->name ?? '-' }}</span>
+                                    <span class="text-[10px] text-[#8c746a]">{{ $item->majorDetail->name ?? '-' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center gap-1.5  bg-accent-green/10 text-accent-green text-xs font-bold rounded-full">
                                     <span class="size-1.5 bg-accent-green rounded-full"></span>
-
                                     @if($item->status == 'Active')
-                                    อนุมัติแล้ว
+                                        อนุมัติแล้ว
                                     @else
-                                    ปิดบัญชี
+                                        ระงับบัญชี
                                     @endif
                                 </span>
                             </td>
@@ -802,9 +906,6 @@ document.addEventListener('keydown', function(event) {
                                 <div class="flex items-center justify-end gap-1  group-hover:opacity-100 transition-opacity">
                                     <button class="p-2 text-[#8c746a] hover:bg-blue-50 hover:text-blue-500 rounded-lg " title="แก้ไข">
                                         <span class="material-symbols-outlined text-xl">edit</span>
-                                    </button>
-                                    <button class="p-2 text-[#8c746a] hover:bg-accent-red/10 hover:text-accent-red rounded-lg " title="ลบ">
-                                        <span class="material-symbols-outlined text-xl">delete</span>
                                     </button>
                                 </div>
                             </td>

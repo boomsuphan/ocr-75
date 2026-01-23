@@ -94,8 +94,8 @@ class RegisterController extends Controller
             'password'  => Hash::make($data['password']),
             
             'std_id'    => $data['std_id'],
-            'faculty'   => $data['faculty'],
-            'major'     => $data['major'],
+            'faculty_id'   => $data['faculty'],
+            'major_id'     => $data['major'],
             'phone'     => $data['phone'],
             'photo'     => $photoPath,
             
