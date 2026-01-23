@@ -185,7 +185,7 @@
                     
                     <div class="grid grid-cols-1 gap-4">
                         <label class="flex flex-col gap-2">
-                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">อีเมล <span class="text-red-500">*</span></span>
+                            <span class="text-sm font-bold text-[#2d2421] dark:text-white">อีเมล</span>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8c746a] text-[20px]">email</span>
                                 <input name="email" type="email"
@@ -393,10 +393,11 @@
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             if (data.success) {
                 alert('เพิ่มสมาชิกเรียบร้อยแล้ว');
                 closeAddMemberModal();
-                location.reload();
+                // location.reload();
             } else {
                 // กรณี Validation Error จาก Laravel จะส่งกลับมาเป็น errors object
                 if(data.errors) {
@@ -994,4 +995,195 @@ document.addEventListener('keydown', function(event) {
         </div>
     </section>
 </div>
+
+
+<div id="successModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-[#2d2421]/60 backdrop-blur-sm transition-opacity" onclick="closeSuccessModal()"></div>
+    <div class="relative w-full max-w-md transform overflow-hidden rounded-3xl bg-white dark:bg-[#1a1513] text-center shadow-2xl transition-all border border-[#f3e9e5] dark:border-[#3d2f2a] p-8">
+        
+        <div class="mx-auto flex size-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 mb-6">
+            <span class="material-symbols-outlined text-4xl text-green-600 dark:text-green-400">check_circle</span>
+        </div>
+
+        <h3 class="text-2xl font-black text-[#2d2421] dark:text-white mb-2">เพิ่มสมาชิกเรียบร้อย!</h3>
+        <p class="text-sm text-[#8c746a] mb-6">ข้อมูลถูกบันทึกลงในระบบแล้ว</p>
+
+        <div class="relative mb-6">
+            <label class="block text-xs font-bold text-left text-[#2d2421] dark:text-gray-300 mb-2 ml-1">ข้อมูลสำหรับส่งให้นักศึกษา:</label>
+            <textarea id="copyUserInfo" readonly 
+                class="w-full h-48 p-4 rounded-xl bg-[#faf6f4] dark:bg-[#251d1a] border border-[#f3e9e5] dark:border-[#3d2f2a] text-sm text-[#2d2421] dark:text-gray-300 font-mono focus:ring-2 focus:ring-primary/50 outline-none resize-none custom-scrollbar"></textarea>
+            
+            <button onclick="copyToClipboard()" class="absolute top-8 right-2 p-2 bg-white dark:bg-[#342a26] rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:text-primary transition-colors group" title="คัดลอก">
+                <span class="material-symbols-outlined text-[20px] group-active:scale-90 transition-transform">content_copy</span>
+            </button>
+        </div>
+
+        <button onclick="closeSuccessModal()" class="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/25 hover:bg-primary-hover transition-all">
+            ตกลง
+        </button>
+    </div>
+</div>
+
+<script>
+    // Success Modal
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.add('hidden');
+        document.getElementById('successModal').classList.remove('flex');
+    }
+
+    // Copy ข้อมูล
+    function copyToClipboard() {
+        const copyText = document.getElementById("copyUserInfo");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // สำหรับมือถือ
+        navigator.clipboard.writeText(copyText.value).then(() => {
+            alert("คัดลอกข้อมูลเรียบร้อยแล้ว!");
+        });
+    }
+
+    function submitAddMember(btn) {
+        const form = document.getElementById('addMemberForm');
+        const formData = new FormData(form);
+
+        // Validation เบื้องต้น
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // เช็ค Password
+        const rawPassword = formData.get('password'); // *เก็บรหัสผ่านดิบไว้ก่อน*
+        const passwordConfirm = formData.get('password_confirmation');
+        if (rawPassword !== passwordConfirm) {
+            alert('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+            return;
+        }
+
+        // เตรียมข้อมูล Status
+        const autoApprove = document.querySelector('input[name="auto_approve"]').checked;
+        formData.set('status', autoApprove ? 'Active' : 'Pending');
+
+        // *ดึงชื่อคณะและสาขาที่เป็น Text มาเก็บไว้แสดงในตาราง*
+        const facultySelect = document.getElementById('modal_faculty');
+        const majorSelect = document.getElementById('modal_major');
+        const facultyName = facultySelect.options[facultySelect.selectedIndex].text;
+        const majorName = majorSelect.options[majorSelect.selectedIndex].text;
+
+        // Loading state
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> กำลังบันทึก...';
+
+        fetch("{{ url('/') }}/api/add_member", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 1. ปิด Modal เพิ่มสมาชิก
+                closeAddMemberModal();
+
+                // 2. สร้างข้อความสำหรับ Copy
+                const user = data.data_user; // ข้อมูลที่ return จาก controller
+                const copyText = `ชื่อ-นามสกุล: ${user.fullname}
+รหัสนักศึกษา: ${user.std_id}
+คณะ: ${facultyName}
+สาขา: ${majorName}
+Username: ${user.username}
+Password: ${rawPassword}`;
+                
+                // 3. ใส่ข้อความลงใน Success Modal
+                document.getElementById('copyUserInfo').value = copyText;
+
+                // 4. เพิ่มข้อมูลลงตารางทันที (ไม่ต้องรีโหลด)
+                addNewUserToTable(user, facultyName, majorName);
+
+                // 5. เปิด Success Modal
+                const successModal = document.getElementById('successModal');
+                successModal.classList.remove('hidden');
+                successModal.classList.add('flex');
+
+                // 6. ล้างค่าในฟอร์ม
+                form.reset();
+                document.getElementById('photoPreviewContainer').style.backgroundImage = 'none';
+                document.getElementById('photoPlaceholder').style.display = 'block';
+
+            } else {
+                if(data.errors) {
+                    let errorMsg = "";
+                    for (const [key, value] of Object.entries(data.errors)) {
+                        errorMsg += value + "\n";
+                    }
+                    alert('ตรวจสอบข้อมูล:\n' + errorMsg);
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'Unknown error'));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    }
+
+    // ฟังก์ชันเพิ่มแถวใหม่ลงตาราง (HTML Injection)
+    function addNewUserToTable(user, facultyName, majorName) {
+        const tableBody = document.querySelector('table tbody');
+        
+        // จัดการรูปภาพ (ถ้ามีรูปจาก Backend ให้ใช้ ถ้าไม่มีใช้ Default)
+        // หมายเหตุ: user.photo จาก controller จะเป็น path เช่น 'profile_photos/xxx.jpg'
+        const photoUrl = user.photo ? `{{ url('storage') }}/${user.photo}` : `{{ url('storage/profile_photos/default-avatar.jpg') }}`;
+        
+        // ตรวจสอบสถานะเพื่อเลือกสี Badge
+        let statusBadge = '';
+        if (user.status === 'Active') {
+            statusBadge = `<span class="inline-flex items-center gap-1.5 bg-accent-green/10 text-accent-green text-xs font-bold rounded-full"><span class="size-1.5 bg-accent-green rounded-full"></span>อนุมัติแล้ว</span>`;
+        } else {
+            statusBadge = `<span class="inline-flex items-center gap-1.5 bg-yellow-500/10 text-yellow-600 text-xs font-bold rounded-full"><span class="size-1.5 bg-yellow-500 rounded-full"></span>รออนุมัติ</span>`;
+        }
+
+        // HTML ของแถวใหม่ (เลียนแบบ Structure เดิมเป๊ะๆ)
+        const newRowHTML = `
+        <tr class="hover:bg-orange-50/30 dark:hover:bg-orange-900/5 transition-colors group animate-in fade-in slide-in-from-top-2 duration-500">
+            <td class="px-8 py-4">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-lg bg-cover bg-center border border-primary/10" style="background-image: url('${photoUrl}');"></div>
+                    <div>
+                        <p class="text-sm font-bold text-[#2d2421] dark:text-white">${user.fullname}</p>
+                        <p class="text-xs text-primary font-medium tracking-tight">ID: ${user.std_id}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-[#8c746a]">${user.username}</td>
+            <td class="px-6 py-4">
+                <div class="flex flex-col gap-1">
+                    <span class="text-[11px] font-bold text-[#2d2421] dark:text-white">${facultyName}</span>
+                    <span class="text-[10px] text-[#8c746a]">${majorName}</span>
+                </div>
+            </td>
+            <td class="px-6 py-4">
+                ${statusBadge}
+            </td>
+            <td class="px-8 py-4 text-right flex justify-end">
+                <div class="flex items-center justify-end gap-1 group-hover:opacity-100 transition-opacity">
+                    <button class="p-2 text-[#8c746a] hover:bg-blue-50 hover:text-blue-500 rounded-lg" title="แก้ไข">
+                        <span class="material-symbols-outlined text-xl">edit</span>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        `;
+
+        // แทรกแถวใหม่ไปไว้บนสุดของตาราง
+        tableBody.insertAdjacentHTML('afterbegin', newRowHTML);
+    }
+</script>
 @endsection

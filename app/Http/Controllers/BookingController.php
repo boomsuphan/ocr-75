@@ -443,7 +443,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว',
-                'user_id' => $user->id
+                'data_user' => $user,
             ]);
 
         } catch (\Exception $e) {
