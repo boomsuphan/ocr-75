@@ -476,7 +476,7 @@ class BookingController extends Controller
         // จัดการรูปภาพ
         if ($request->hasFile('photo')) {
             // ลบรูปเก่า (ถ้ามี)
-            // if($user->photo) Storage::disk('public')->delete($user->photo);
+            if($user->photo) Storage::disk('public')->delete($user->photo);
             $user->photo = $request->file('photo')->store('profile_photos', 'public');
         }
 
