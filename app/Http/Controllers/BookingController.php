@@ -8,11 +8,13 @@ use App\Http\Requests;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use App\Models\Room;
+use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Semester;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class BookingController extends Controller
 {
@@ -261,4 +263,96 @@ class BookingController extends Controller
         return response()->json($rooms);
 
     }
+
+    
+    public function manage_user(Request $request)
+    {
+         $keyword = $request->get('search');
+        $perPage = 25;
+
+  
+
+        $data_user = Auth::user();
+
+        $user_active = User::where('status' , 'NOT LIKE',  'Pending')->latest()->paginate($perPage);
+        $user_pending  = User::where('status' ,  'Pending')->get();
+
+
+        return view('admin.manage_user', compact('user_active','user_pending'));
+
+
+    }
+
+    public function approve_member(Request $request) {
+        $userId = $request->user_id;
+        $action = $request->action; // 'approve' หรือ 'reject'
+        $reason = $request->reason; // มีเฉพาะตอน reject
+        
+        if ($action === 'approve') {
+            // อัพเดทสถานะเป็นอนุมัติ
+            User::where('id', $userId)->update(['status' => 'Active']);
+            
+            return response()->json(['success' => true]);
+        } else {
+            // อัพเดทสถานะเป็นปฏิเสธ พร้อมเหตุผล
+            User::where('id', $userId)->update([
+                'status' => 'Inactive',
+            ]);
+            
+            return response()->json(['success' => true]);
+        }
+    }
+    public function approve_all_members(Request $request) {
+        try {
+            // อัพเดทสมาชิกทั้งหมดที่รอการอนุมัติ
+            $updated = User::where('status', 'Pending')
+                ->update(['status' => 'Active']);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'อนุมัติสมาชิกทั้งหมดเรียบร้อยแล้ว',
+                'count' => $updated
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    // เพิ่มใน BookingController
+
+public function add_member(Request $request) {
+
+
+        $fullname = $request['fullname'];
+        $std_id = $request['std_id'];
+        $faculty = $request['faculty'];
+        $major = $request['major'];
+        $email = $request['email'];
+        $username = $request['username'];
+        $password = uniqid();
+        
+   
+        // สร้างสมาชิกใหม่
+        $user = new User();
+        $user->fullname = $fullname;
+        $user->std_id = $std_id;
+        $user->faculty = $faculty;
+        $user->major = $major;
+        $user->email = $email;
+        $user->username = $username;
+        $user->password = $password;
+        // $user->photo = $photoPath;
+        $user->status = $request->status ?? 'Pending';
+        $user->role = 'นักศึกษา'; // หรือตามที่ต้องการ
+        $user->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'เพิ่มสมาชิกเรียบร้อยแล้ว',
+            'user_id' => $user->id
+        ]);
+        
+}
 }

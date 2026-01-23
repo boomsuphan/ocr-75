@@ -30,6 +30,9 @@ Route::get('/demo/history', function () {
 Route::get('/demo/home2', function () {
     return view('demo/home2');
 });
+Route::get('/demo/manage_user', function () {
+    return view('demo/manage_user');
+});
 // ROLE
 // ---------------------------------------------//
 // admin >> แอดมิน
@@ -49,6 +52,10 @@ Route::middleware(['auth', 'role:admin,officer'])->group(function () {
     Route::get('check_qr/{code}', 'BookingController@check_qr');
     Route::post('save_give_key', 'BookingController@save_give_key');
     Route::post('save_return_key', 'BookingController@save_return_key');
+    Route::get('manage_user', 'BookingController@manage_user');
+    Route::resource('semesters', 'SemestersController');
+    Route::resource('faculties', 'FacultiesController');
+    Route::resource('majors', 'MajorsController');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์
@@ -70,6 +77,3 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
 });
 
 
-Route::resource('semesters', 'SemestersController');
-Route::resource('faculties', 'FacultiesController');
-Route::resource('majors', 'MajorsController');
