@@ -68,3 +68,5 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
 
 
 Route::resource('semesters', 'SemestersController');
+Route::resource('faculties', 'FacultiesController');
+Route::resource('majors', 'MajorsController');
