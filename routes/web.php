@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+Route::get('/pending_status', 'HomeController@pending_status');
 
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/demo/home', function () {
     return view('demo/home');
@@ -59,6 +58,10 @@ Route::middleware(['auth', 'role:admin,officer,professor'])->group(function () {
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์, นักศึกษา
 Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(function () {
+
+    Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@index')->name('home');
+
     Route::resource('booking', 'BookingController')->except(['create','show']);
     Route::get('create_booking/{room_id}', 'BookingController@create_booking');
     Route::get('booking/show_qr/{code}', 'BookingController@show_qr');

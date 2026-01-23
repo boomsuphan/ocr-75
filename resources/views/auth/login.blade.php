@@ -21,22 +21,32 @@
             <!-- Username Input -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal" for="username">
-                    ชื่อผู้ใช้
+                    ชื่อผู้ใช้งาน หรือ รหัสนักศึกษา
                 </label>
                 <div class="mb-4">
 
                     <div class="relative flex items-center">
                         <span class="absolute left-4 text-[#617589] dark:text-gray-500 material-symbols-outlined text-[20px] select-none">person</span>
 
-                        <input id="email" type="email" class=" @error('email') is-invalid @enderror form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-[#101922] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary border border-[#dbe0e6] dark:border-gray-700 bg-white h-12 placeholder:text-[#9ca3af] pl-11 pr-4 text-base font-normal leading-normal transition-all" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="กรอกชื่อผู้ใช้งานของคุณ" autofocus>
+                        <input 
+                            id="username" 
+                            type="text" 
+                            class="@error('username') border-red-500 @enderror form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white dark:bg-[#101922] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary border border-[#dbe0e6] dark:border-gray-700 bg-white h-12 placeholder:text-[#9ca3af] pl-11 pr-4 text-base font-normal leading-normal transition-all" 
+                            name="username" 
+                            value="{{ old('username') }}" 
+                            required 
+                            autocomplete="username" 
+                            placeholder="กรอกชื่อผู้ใช้งาน หรือ รหัสนักศึกษา" 
+                            autofocus
+                        >
                     </div>
-                    @error('email')
-                    <p class="invalid-feedback " role="alert">
+                    
+                    @error('username')
+                    <p class="text-red-500 text-sm mt-1" role="alert">
                         <strong>{{ $message }}</strong>
                     </p>
                     @enderror
                 </div>
-
             </div>
             <!-- Password Input -->
             <div class="mb-4">

@@ -25,11 +25,12 @@ class HomeController extends Controller
     public function index()
     {   
         $perPage = 25;
-
-      
         $room = Room::all();
-        
 
         return view('home', compact('room'));
+    }
+
+    public function pending_status(){
+        return view('pending_status');
     }
 }

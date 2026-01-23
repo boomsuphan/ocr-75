@@ -18,5 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('majors/{faculty_id}', 'Auth\RegisterController@getMajors');
+
 Route::get('/get_data_create_booking/{room_id}', 'BookingController@get_data_create_booking');
 
