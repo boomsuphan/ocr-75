@@ -32,7 +32,9 @@ class HomeController extends Controller
     public function index()
     {   
         $perPage = 25;
-        $room = Room::all();
+        $room = Room::orderByRaw('CAST(floor AS UNSIGNED) ASC')
+                ->orderBy('name', 'asc')
+                ->get();
 
         return view('home', compact('room'));
     }
