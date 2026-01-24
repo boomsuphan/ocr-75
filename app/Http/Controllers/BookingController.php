@@ -484,4 +484,49 @@ class BookingController extends Controller
 
         return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อยแล้ว');
     }
+
+
+    
+ public function booking_history(Request $request)
+{
+    $user = Auth::user();
+    $perPage = 25;
+    
+    // รับค่าจากการค้นหา
+    $search = $request->input('search');
+    $status = $request->input('status');
+    $date = $request->input('date');
+
+    // สร้าง Query
+    $query = Booking::where('user_id', $user->id)
+        ->leftJoin('rooms', 'bookings.room_id', '=', 'rooms.id')
+        ->select(
+            'bookings.*',
+            'rooms.name as room_name',
+            'rooms.status as room_status',
+            'rooms.floor as room_floor'
+        );
+
+    // ค้นหาตามชื่อห้อง หรือ note (วัตถุประสงค์)
+    if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->where('rooms.name', 'LIKE', "%$search%")
+              ->orWhere('bookings.note', 'LIKE', "%$search%");
+        });
+    }
+
+    // กรองตามสถานะ
+    if (!empty($status)) {
+        $query->where('bookings.status', $status);
+    }
+
+    // กรองตามวันที่
+    if (!empty($date)) {
+        $query->whereDate('bookings.date_booking', $date);
+    }
+
+    $history = $query->latest('bookings.created_at')->paginate($perPage);
+
+    return view('booking.history', compact('history'));
+}
 }

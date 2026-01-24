@@ -27,6 +27,9 @@ Route::get('/demo/qrcode', function () {
 Route::get('/demo/history', function () {
     return view('demo/history');
 });
+Route::get('/demo/history2', function () {
+    return view('demo/history2');
+});
 Route::get('/demo/home2', function () {
     return view('demo/home2');
 });
@@ -76,6 +79,7 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
     Route::get('booking/show_qr/{code}', 'BookingController@show_qr');
     Route::get('get_data_create_booking/{room_id}', 'BookingController@get_data_create_booking');
     Route::get('room_detail/{room_id}', 'RoomController@room_detail');
+    Route::get('booking_history', 'BookingController@booking_history');
 });
 
 

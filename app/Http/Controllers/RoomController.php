@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Room;
 use Illuminate\Http\Request;
