@@ -97,7 +97,7 @@
                     @if(in_array($role, ['admin', 'officer']))
                         <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/manage_user') }}">จัดการสมาชิก</a>
                         <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/admin/manage_room') }}">จัดการห้องเรียน</a>
-                        <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/admin/history') }}">ประวัติการใช้งาน</a>
+                        <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/history') }}">การจองของฉัน</a>
                         
                         <a href="{{ url('/scan_qr') }}" class="flex items-center justify-center size-10 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-primary hover:text-white text-[#111418] dark:text-gray-200 transition-all" title="สแกน QR-Code">
                             <span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
@@ -182,9 +182,9 @@
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">meeting_room</span>
                                     <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">จัดการห้องเรียน</span>
                                 </a>
-                                <a href="{{ url('/admin/history') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                                <a href="{{ url('/history') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">history</span>
-                                    <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">ประวัติการใช้งาน</span>
+                                    <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">การจองของฉัน</span>
                                 </a>
                                 <a href="{{ url('/scan_qr') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">qr_code_scanner</span>

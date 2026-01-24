@@ -61,6 +61,8 @@ Route::middleware(['auth', 'role:admin,officer'])->group(function () {
     Route::resource('majors', 'MajorsController');
     Route::get('admin/user/{id}/edit', 'BookingController@admin_edit_user')->name('admin.user.edit');
     Route::post('admin/user/{id}/update', 'BookingController@admin_update_user')->name('admin.user.update');
+    Route::get('admin/manage_room', 'RoomController@manage_room');
+    Route::get('room_detail/{room_id}', 'RoomController@room_detail');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์
@@ -78,8 +80,7 @@ Route::middleware(['auth', 'role:admin,officer,professor,students'])->group(func
     Route::get('create_booking/{room_id}', 'BookingController@create_booking');
     Route::get('booking/show_qr/{code}', 'BookingController@show_qr');
     Route::get('get_data_create_booking/{room_id}', 'BookingController@get_data_create_booking');
-    Route::get('room_detail/{room_id}', 'RoomController@room_detail');
-    Route::get('booking_history', 'BookingController@booking_history');
+    Route::get('history', 'BookingController@booking_history');
 });
 
 
