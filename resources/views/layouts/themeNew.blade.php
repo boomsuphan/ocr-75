@@ -90,7 +90,7 @@
                 @if(Auth::check())
                 
                 @php
-                    $role = Auth::user()->role; // ดึง Role ของผู้ใช้ปัจจุบัน
+                    $role = Auth::user()->role;
                 @endphp
 
                 <div class="hidden lg:flex items-center gap-6 mr-4">
@@ -123,7 +123,7 @@
                         </div>
                         <ul class="py-1">
                             <li>
-                                <a href="#" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                <a href="{{ url('/profile') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">person</span>
                                     โปรไฟล์
                                 </a>
@@ -199,7 +199,7 @@
                                 </a>
                             @endif
                             
-                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                            <a href="{{ url('/profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                 <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">person</span>
                                 <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">โปรไฟล์</span>
                             </a>
