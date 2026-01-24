@@ -129,4 +129,12 @@ class RoomController extends Controller
 
         return view('room.room_detail', compact('room','booking'));
     }
+
+     public function manage_room(Request $request)
+    {
+        $perPage = 25;
+        $room = Room::all();
+
+        return view('admin.manage_room', compact('room'));
+    }
 }

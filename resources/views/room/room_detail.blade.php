@@ -45,10 +45,10 @@
 
         <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-2 border-b border-gray-200 dark:border-gray-800">
             <div class="flex flex-col gap-2">
-                <h2 class="text-3xl lg:text-4xl font-black tracking-tight text-text-main dark:text-white">ประวัติการใช้งาน: IT 401</h2>
+                <h2 class="text-3xl lg:text-4xl font-black tracking-tight text-text-main dark:text-white">ประวัติการใช้งาน: {{$room->name}}</h2>
                 <div class="flex items-center gap-2 text-text-sub dark:text-gray-400">
                     <span class="material-symbols-outlined text-[20px]">location_on</span>
-                    <span class="text-base">อาคารคณะวิทยาการคอมพิวเตอร์ ชั้น 4</span>
+                    <span class="text-base">อาคารคณะวิทยาการคอมพิวเตอร์ ชั้น {{$room->floor}}</span>
                 </div>
             </div>
 
@@ -59,9 +59,9 @@
                 <table class="w-full min-w-[800px] border-collapse">
                     <thead>
                         <tr class="bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">วันที่</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">เวลา</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400 ">วิชา / วัตถุประสงค์</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">วันที่/เวลา</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">ผู้จอง</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400 ">วิชา</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">อาจารย์ผู้สอน</th>
                             <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">สถานะ</th>
                             <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-text-sub dark:text-gray-400">จัดการ</th>
@@ -72,21 +72,21 @@
                       
                         <tr class="group hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-xs text-text-sub dark:text-gray-500">{{ thaidate('วันl', $item->date_booking) }}</div>
                                 <div class="text-sm font-semibold text-text-main dark:text-white">
                                     {{ thaidate('j M Y', $item->date_booking) }}
                                 </div>
-                                <div class="text-xs text-text-sub dark:text-gray-500">{{ thaidate('วันl', $item->date_booking) }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded w-fit">
-                                    <span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+                                 <div class="flex items-center gap-2 text-sm text-text-main dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded w-fit">
                                     {{ substr($item->time_start_booking, 0, 5) }} - {{ substr($item->time_end_booking, 0, 5) }}
 
                                 </div>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                 <div class="text-sm font-bold text-text-main dark:text-white"> ชื่อ </div>
+                                <div class="text-xs text-text-sub dark:text-gray-400 mt-0.5"> role</div>
+                            </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm font-bold text-text-main dark:text-white"> {{$item->subject }}</div>
-                                <div class="text-xs text-text-sub dark:text-gray-400 mt-0.5">{{$item->note }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
