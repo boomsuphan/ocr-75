@@ -135,8 +135,8 @@
                         <thead class="bg-[#f8fafc] dark:bg-[#1a2632] border-b border-[#dbe0e6] dark:border-[#2b3b4d]">
                             <tr>
                                 <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">วันที่</th>
-                                <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">ห้องเรียน</th>
                                 <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">ช่วงเวลา</th>
+                                <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">ห้องเรียน</th>
                                 <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">วัตถุประสงค์</th>
                                 <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af]">สถานะ</th>
                                 <th class="px-6 py-4 font-semibold text-[#617589] dark:text-[#9ca3af] text-right">การจัดการ</th>
@@ -146,15 +146,15 @@
                             @foreach($history as $item)
                                 <tr class="hover:bg-[#f8fafc] dark:hover:bg-[#1a2632] transition-colors">
                                     <td class="px-6 py-4 text-[#111418] dark:text-white font-medium">{{ thaidate('j M Y', $item->date_booking) }}</td>
+                                    <td class="px-6 py-4 text-[#111418] dark:text-white"> 
+                                        {{ \Carbon\Carbon::parse($item->time_start_booking)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($item->time_end_booking)->format('H:i') }}
+                                    </td>
                                     <td class="px-6 py-4 text-[#111418] dark:text-white">
                                         <div class="flex flex-col">
                                             <span class="font-medium">ห้อง {{$item->room_name}}</span>
                                             <span class="text-xs text-[#617589] dark:text-[#9ca3af]">ชั้น {{$item->room_floor}}</span>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-[#111418] dark:text-white"> 
-                                        {{ \Carbon\Carbon::parse($item->time_start_booking)->format('H:i') }} - 
-                                        {{ \Carbon\Carbon::parse($item->time_end_booking)->format('H:i') }}
                                     </td>
                                     <td class="px-6 py-4 text-[#111418] dark:text-white truncate max-w-[200px]">{{$item->note}}</td>
                                     <td class="px-6 py-4">
@@ -186,7 +186,7 @@
                                         @endswitch
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        @if($item->status == 'จองเรียบร้อย')
+                                        @if($item->status != 'คืนกุญแจแล้ว')
                                         <div class="mt-auto">
                                             <a href="{{url('booking/show_qr/')}}/{{$item->code_for_qr}}"
                                                 class="flex w-full items-center justify-center gap-2 rounded-lg py-2.5 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 text-primary font-bold text-sm transition-colors">

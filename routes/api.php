@@ -24,3 +24,4 @@ Route::get('/get_data_create_booking/{room_id}', 'BookingController@get_data_cre
 Route::post('/approve_member', 'BookingController@approve_member');
 Route::post('/approve_all_members', 'BookingController@approve_all_members');
 Route::post('/add_member', 'BookingController@add_member');
+Route::post('/admin/update_room_status', 'RoomController@update_status');

@@ -46,23 +46,36 @@ Route::get('/demo/manage_user', function () {
 
 // แอดมิน
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('room', 'RoomController');
+    // Route::resource('room', 'RoomController');
 });
 
 // แอดมิน, เจ้าหน้าที่
 Route::middleware(['auth', 'role:admin,officer'])->group(function () {
+
+    // จัดการ semesters
+    Route::get('create_semesters', 'SemestersController@create_semesters');
+    Route::post('save_semesters', 'SemestersController@save_semesters');
+    Route::get('delete_semester/{id}', 'SemestersController@delete_semester');
+
+    // จัดการห้องเรียน
+    Route::get('/create_room', 'RoomController@create_room');
+    Route::post('/save_room', 'RoomController@save_room');
+    Route::post('/delete_room', 'RoomController@delete_room');
+
     Route::get('scan_qr', 'BookingController@scan_qr');
     Route::get('check_qr/{code}', 'BookingController@check_qr');
+    Route::get('data_of_booking/{code}', 'BookingController@data_of_booking');
     Route::post('save_give_key', 'BookingController@save_give_key');
     Route::post('save_return_key', 'BookingController@save_return_key');
     Route::get('manage_user', 'BookingController@manage_user');
-    Route::resource('semesters', 'SemestersController');
     Route::resource('faculties', 'FacultiesController');
     Route::resource('majors', 'MajorsController');
     Route::get('admin/user/{id}/edit', 'BookingController@admin_edit_user')->name('admin.user.edit');
     Route::post('admin/user/{id}/update', 'BookingController@admin_update_user')->name('admin.user.update');
     Route::get('admin/manage_room', 'RoomController@manage_room');
     Route::get('room_detail/{room_id}', 'RoomController@room_detail');
+    Route::post('/cancel_booking', 'BookingController@cancel_booking');
+    Route::post('/room/add_recurring', 'RoomController@addRecurringSchedule');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์

@@ -218,48 +218,125 @@ class BookingController extends Controller
         }
     }
 
+    public function data_of_booking($code)
+    {
+        $data_user = Auth::user();
+        $bookings = Booking::with('user')->where('code_for_qr' , $code)->first(); 
+
+        $rooms = Room::where('id' , $bookings->room_id)->first();
+
+        return view('admin.data_of_booking', compact('data_user','bookings','rooms'));
+    }
+
     public function save_give_key(Request $request)
     {
         $booking = Booking::find($request->booking_id);
         
+        // สร้างรหัสยืนยันการคืน
         $randomCode = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
 
-        $booking->update([
+        // 1. ข้อมูลพื้นฐาน
+        $updateData = [
             'status' => 'รับกุญแจแล้ว',
             'time_get_key' => now(),
             'id_officer_give_key' => Auth::id(),
             'return_verify_code' => $randomCode
-        ]);
+        ];
+
+        // 2. Logic เลือกบันทึกผู้รับกุญแจ
+        
+        // กรณีที่ 1: มีการติ๊ก "รับเอง"
+        if ($request->has('is_self_pickup') && $request->is_self_pickup == 1) {
+            $updateData['picker_user_id'] = $booking->user->id;
+            $updateData['picker_std_id'] = null;
+        }
+        // กรณีที่ 2: มีการกรอก "รหัสนักศึกษา"
+        elseif ($request->filled('picker_std_id')) {
+            $updateData['picker_std_id'] = $request->picker_std_id; 
+            $updateData['picker_user_id'] = null;
+        }
+        // กรณีที่ 3: นักศึกษา/อาจารย์ จองปกติ
+        else {
+            $updateData['picker_std_id'] = $booking->user->std_id; 
+            $updateData['picker_user_id'] = null;
+        }
+
+        $booking->update($updateData);
 
         return redirect('room_detail/' . $booking->room_id)->with('flash_message', 'บันทึกการเบิกกุญแจสำเร็จ');
     }
 
     public function save_return_key(Request $request)
     {
-        $request->validate([
-            'verify_code' => 'required|numeric|digits:4',
-        ]);
-
         $booking = Booking::find($request->booking_id);
 
-        // 1. ตรวจสอบสถานะ
+        // ตรวจสอบสถานะ
         if ($booking->status != 'รับกุญแจแล้ว') {
             return redirect('scan_qr')->with('error', 'สถานะไม่ถูกต้อง');
         }
 
-        // 2. *** ตรวจสอบรหัสยืนยัน *** 
-        if ($booking->return_verify_code !== $request->verify_code) {
-            return redirect()->back()->with('error', 'รหัสยืนยันไม่ถูกต้อง! กรุณาถามรหัสจากนักศึกษาใหม่อีกครั้ง');
-        }
-
-        // 3. รหัสถูกต้อง บันทึกข้อมูล
-        $booking->update([
+        // ตัวแปรสำหรับอัปเดต
+        $updateData = [
             'status' => 'คืนกุญแจแล้ว',
             'time_return_key' => now(),
             'id_officer_return_key' => Auth::id()
-        ]);
+        ];
 
-        return redirect('room_detail/' . $booking->room_id)->with('flash_message', 'รับคืนกุญแจเรียบร้อย! (รหัสยืนยันถูกต้อง)');
+        // ตรวจสอบเงื่อนไขตาม Role ของผู้จอง
+        if (in_array($booking->user->role, ['admin', 'officer'])) {
+            
+            // === กรณี Admin/Officer เป็นคนจอง ===
+            if ($request->has('is_self_return') && $request->is_self_return == 1) {
+                // คืนเอง
+                $updateData['returnee_user_id'] = $booking->user->id;
+                $updateData['returnee_std_id'] = null;
+            } elseif ($request->filled('returnee_std_id')) {
+                // คนอื่นมาคืนแทน
+                $updateData['returnee_std_id'] = $request->returnee_std_id;
+                $updateData['returnee_user_id'] = null;
+            } else {
+                // กันเหนียว: กรณีไม่ได้ส่งอะไรมา ให้ default เป็นคืนเองไปก่อน
+                $updateData['returnee_user_id'] = $booking->user->id;
+            }
+
+        } else {
+
+            // === กรณี Student/Professor เป็นคนจอง ===
+            $request->validate([
+                'verify_code' => 'required|numeric|digits:4',
+            ], [
+                'verify_code.required' => 'กรุณาระบุรหัสยืนยัน',
+                'verify_code.digits' => 'รหัสยืนยันต้องมี 4 หลัก',
+            ]);
+
+            if ($booking->return_verify_code !== $request->verify_code) {
+                return redirect()->back()->with('error', 'รหัสยืนยันไม่ถูกต้อง! กรุณาตรวจสอบใหม่อีกครั้ง');
+            }
+
+            // บันทึกว่า นศ. เป็นคนคืน
+            $updateData['returnee_std_id'] = $booking->user->std_id;
+            $updateData['returnee_user_id'] = null;
+        }
+
+        // บันทึกข้อมูล
+        $booking->update($updateData);
+
+        return redirect('room_detail/' . $booking->room_id)->with('flash_message', 'รับคืนกุญแจเรียบร้อย!');
+    }
+
+    public function cancel_booking(Request $request)
+    {
+        $booking = Booking::find($request->booking_id);
+        
+        if ($booking->status == 'จองเรียบร้อย') {
+            $booking->update([
+                'status' => 'ยกเลิก',
+                'cancelled_by' => Auth::id()
+            ]);
+            return redirect('room_detail/' . $booking->room_id)->with('success', 'ยกเลิกการจองเรียบร้อยแล้ว');
+        }
+
+        return back()->with('error', 'ไม่สามารถยกเลิกได้');
     }
 
     public function get_data_create_booking($room_id)
@@ -525,7 +602,7 @@ class BookingController extends Controller
         $query->whereDate('bookings.date_booking', $date);
     }
 
-    $history = $query->latest('bookings.created_at')->paginate($perPage);
+    $history = $query->orderBy('date_booking','DESC')->paginate($perPage);
 
     return view('booking.history', compact('history'));
 }

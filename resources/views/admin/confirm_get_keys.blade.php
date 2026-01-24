@@ -25,7 +25,7 @@
 
                     <div class="p-6 space-y-6">
                         
-                        {{-- Section 2: ข้อมูลห้องและเวลา --}}
+                        {{-- ข้อมูลห้องและเวลา --}}
                         <div>
                             <h3 class="text-[#111418] dark:text-white text-lg font-bold mb-4 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">meeting_room</span>
@@ -37,28 +37,14 @@
                                     <span class="text-[#111418] dark:text-white font-medium">{{ $rooms->name }} (ชั้น {{ $rooms->floor }})</span>
                                 </div>
                                 <div class="flex flex-col">
-                                    {{-- Label: วันที่ เวลา (อยู่บรรทัดบนเหมือนเดิม) --}}
                                     <span class="text-[#617589] dark:text-gray-400 mb-1">วันที่ เวลา</span>
-
-                                    @php
-                                        $date = \Carbon\Carbon::parse($bookings->date_booking);
-                                        $thai_months = [1=>'ม.ค.',2=>'ก.พ.',3=>'มี.ค.',4=>'เม.ย.',5=>'พ.ค.',6=>'มิ.ย.',7=>'ก.ค.',8=>'ส.ค.',9=>'ก.ย.',10=>'ต.ค.',11=>'พ.ย.',12=>'ธ.ค.'];
-                                        $date_str = $date->day . ' ' . $thai_months[$date->month] . ' ' . ($date->year + 543);
-                                    @endphp
-
-                                    {{-- Content: วันที่ และ เวลา (จัดให้อยู่บรรทัดเดียวกัน) --}}
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        {{-- ส่วนวันที่ --}}
-                                        <span class="text-[#111418] dark:text-white font-medium">
-                                            {{ $date_str }}
-                                        </span>
-
-                                        {{-- ส่วนเวลา --}}
-                                        <span class="text-primary font-bold">
-                                            {{ \Carbon\Carbon::parse($bookings->time_start_booking)->format('H:i') }} - 
-                                            {{ \Carbon\Carbon::parse($bookings->time_end_booking)->format('H:i') }} น.
-                                        </span>
-                                    </div>
+                                    <span class="text-[#111418] dark:text-white font-medium">
+                                        {{ \Carbon\Carbon::parse($bookings->date_booking)->format('d/m/Y') }}
+                                    </span>
+                                    <span class="text-primary font-bold">
+                                        {{ \Carbon\Carbon::parse($bookings->time_start_booking)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($bookings->time_end_booking)->format('H:i') }} น.
+                                    </span>
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-[#617589] dark:text-gray-400">วิชา</span>
@@ -68,16 +54,20 @@
                                     <span class="text-[#617589] dark:text-gray-400">อาจารย์</span>
                                     <span class="text-[#111418] dark:text-white font-medium">{{ $bookings->name_professor }}</span>
                                 </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#617589] dark:text-gray-400">รายละเอียด</span>
+                                    <span class="text-[#111418] dark:text-white font-medium">{{ $bookings->note }}</span>
+                                </div>
                             </div>
                         </div>
 
                         <hr class="border-zinc-100 dark:border-zinc-800">
 
-                        {{-- Section 3: ข้อมูลผู้จอง (ดึงจาก Relation หรือ User ID) --}}
+                        {{-- Section 3: ข้อมูลผู้จอง --}}
                         <div>
                             <h3 class="text-[#111418] dark:text-white text-lg font-bold mb-4 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">person</span>
-                                ผู้ขอเบิกกุญแจ
+                                ผู้จองห้อง
                             </h3>
                             <div class="flex items-center gap-4">
                                 <div class="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xl font-bold text-gray-500">
@@ -86,9 +76,13 @@
                                 <div>
                                     <p class="text-[#111418] dark:text-white font-bold text-lg">
                                         {{ $bookings->user->name ?? 'User ID: ' . $bookings->user_id }}
+                                        <br>
+                                        <span class="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
+                                            {{ ucfirst($bookings->user->role) }}
+                                        </span>
                                     </p>
                                     <p class="text-[#617589] dark:text-gray-400 text-sm">
-                                        รหัสการจอง: {{ $bookings->code_for_qr }}
+                                        รหัสนักศึกษา: {{ $bookings->user->std_id ?? ''}}
                                     </p>
                                 </div>
                             </div>
@@ -96,47 +90,114 @@
 
                         <hr class="border-zinc-100 dark:border-zinc-800">
 
-                        {{-- Section 4: ข้อมูลเจ้าหน้าที่ (ผู้ทำรายการ) --}}
-                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-                            <h3 class="text-[#111418] dark:text-white text-sm font-bold mb-2 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-blue-600 text-lg">badge</span>
-                                เจ้าหน้าที่ผู้ทำรายการ
-                            </h3>
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="text-[#111418] dark:text-white font-medium">{{ $data_user->name }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Form Action --}}
-                        <form action="{{ url('/save_give_key') }}" method="POST" class="mt-6">
+                        {{-- Form Action: ยืนยันการส่งมอบ --}}
+                        <form action="{{ url('/save_give_key') }}" method="POST" class="mt-6" id="giveKeyForm">
                             @csrf
-                            {{-- ส่ง ID Booking ไป --}}
                             <input type="hidden" name="booking_id" value="{{ $bookings->id }}">
-                            {{-- ส่ง ID Officer ไป (จริงๆ ใช้ Auth::id() ใน Controller ปลอดภัยกว่า แต่ส่งไปเพื่อความชัดเจนตามโจทย์) --}}
-                            <input type="hidden" name="id_officer_give_key" value="{{ $data_user->id }}">
+                            <input type="hidden" name="id_officer_give_key" value="{{ Auth::id() }}">
 
                             @if($bookings->status == 'จองเรียบร้อย')
+                                
+                                {{-- === เงื่อนไขข้อ 2: หากผู้จองเป็น Admin หรือ Officer === --}}
+                                @if(in_array($bookings->user->role, ['admin', 'officer']))
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-4">
+                                        <div class="flex items-start gap-3 mb-3">
+                                            <span class="material-symbols-outlined text-yellow-600 mt-1">info</span>
+                                            <div>
+                                                <p class="text-sm font-bold text-yellow-800 dark:text-yellow-500">
+                                                    เนื่องจากผู้จองคือ {{ ucfirst($bookings->user->role) }}
+                                                </p>
+                                                <p class="text-xs text-yellow-700 dark:text-yellow-600">
+                                                    กรุณาระบุรหัสนักศึกษา หรือผู้ที่มารับกุญแจแทน
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            {{-- Input รหัสนักศึกษา --}}
+                                            <div>
+                                                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                                                    รหัสนักศึกษาผู้มารับกุญแจ <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="text" name="picker_std_id" id="picker_std_id" required
+                                                    class="w-full h-10 px-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm bg-white dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
+                                                    placeholder="เช่น 64xxxxxx">
+                                            </div>
+
+                                            {{-- Checkbox รับเอง --}}
+                                            <div class="flex items-center gap-2">
+                                                <input type="checkbox" id="is_self_pickup" name="is_self_pickup" value="1"
+                                                    class="w-4 h-4 text-yellow-600 rounded focus:ring-yellow-500 border-gray-300"
+                                                    onchange="togglePickerInput()">
+                                                <label for="is_self_pickup" class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+                                                    ฉันเป็นผู้เบิกกุญแจด้วยตนเอง (เจ้าของบัญชี)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                {{-- ปุ่มยืนยัน (กดได้ปกติ) --}}
                                 <button type="submit" class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-4 bg-primary hover:bg-blue-600 transition-colors text-white text-lg font-bold gap-2 shadow-lg shadow-blue-500/30">
                                     <span class="material-symbols-outlined text-2xl">vpn_key</span>
                                     ยืนยันการส่งมอบกุญแจ
                                 </button>
+
                             @else
                                 <div class="text-center p-3 bg-red-50 text-red-600 rounded-lg border border-red-100">
                                     <p class="font-bold">ไม่สามารถทำรายการได้</p>
                                     <p class="text-sm">เนื่องจากสถานะปัจจุบันคือ "{{ $bookings->status }}"</p>
                                 </div>
-                                <a href="{{ url('/booking') }}" class="block text-center mt-4 text-gray-500 hover:text-gray-700 underline">กลับสู่หน้าหลัก</a>
+                                <a href="{{ url('/scan_qr') }}" class="block text-center mt-4 text-gray-500 hover:text-gray-700 underline">กลับสู่หน้าสแกน</a>
                             @endif
                         </form>
 
                     </div>
                 </div>
 
+                {{-- ปุ่มยกเลิกการจอง (ปรับตาม Requirement) --}}
+                @if( Auth::user()->role == "admin" || Auth::user()->role == "officer" )
+                    @if($bookings->status == 'จองเรียบร้อย')
+                    <div class="mt-6 flex justify-center">
+                        <form action="{{ url('/cancel_booking') }}" method="POST" onsubmit="return confirm('ยืนยันที่จะยกเลิกการจองนี้ใช่หรือไม่?');">
+                            @csrf
+                            <input type="hidden" name="booking_id" value="{{ $bookings->id }}">
+                            <input type="hidden" name="cancelled_by" value="{{ Auth::id() }}">
+                            
+                            <button type="submit" class="flex items-center gap-2 px-6 py-2.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition-colors text-sm font-bold">
+                                <span class="material-symbols-outlined text-lg">cancel</span>
+                                ยกเลิกการจอง (Cancel)
+                            </button>
+                        </form>
+                    </div>
+                    @endif
+                @endif
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function togglePickerInput() {
+        const checkbox = document.getElementById('is_self_pickup');
+        const input = document.getElementById('picker_std_id');
+
+        if (checkbox.checked) {
+            // กรณีติ๊ก "รับเอง" -> ปิด Input และไม่ต้อง Validate
+            input.disabled = true;
+            input.required = false;
+            input.value = ''; // ล้างค่า
+            input.classList.add('bg-gray-100', 'cursor-not-allowed');
+            input.placeholder = 'ระบุว่าเป็นเจ้าของบัญชีรับเอง';
+        } else {
+            // กรณีไม่ติ๊ก -> ต้องกรอก
+            input.disabled = false;
+            input.required = true;
+            input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+            input.placeholder = 'เช่น 64xxxxxx';
+        }
+    }
+</script>
 
 @endsection

@@ -7,6 +7,7 @@ use App\Http\Requests;
 
 use App\Models\Semester;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SemestersController extends Controller
 {
@@ -118,5 +119,36 @@ class SemestersController extends Controller
         Semester::destroy($id);
 
         return redirect('semesters')->with('flash_message', 'Semester deleted!');
+    }
+
+    public function create_semesters()
+    {
+        $semesters = Semester::orderBy('id', 'desc')->get();
+        return view('semesters.create_semesters', compact('semesters'));
+    }
+
+    public function save_semesters(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'date_start' => 'required|date',
+            'date_end' => 'required|date|after_or_equal:date_start',
+        ], [
+            'date_end.after_or_equal' => 'วันสิ้นสุดต้องอยู่หลังวันเริ่มต้น'
+        ]);
+
+        Semester::create([
+            'name' => $request->name,
+            'date_start' => $request->date_start,
+            'date_end' => $request->date_end,
+        ]);
+
+        return back()->with('success', 'เพิ่มภาคการศึกษาเรียบร้อยแล้ว');
+    }
+
+    public function delete_semester($id)
+    {
+        Semester::find($id)->delete();
+        return back()->with('success', 'ลบข้อมูลเรียบร้อยแล้ว');
     }
 }

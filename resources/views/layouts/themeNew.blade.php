@@ -54,16 +54,16 @@
         }
         
         /* Dropdown Animation */
-        #userDropdownMenu {
+        #userDropdownMenu, #adminDropdownMenu {
             transition: all 0.2s ease-in-out;
             transform-origin: top right;
         }
-        #userDropdownMenu.hidden {
+        #userDropdownMenu.hidden, #adminDropdownMenu.hidden {
             opacity: 0;
             transform: scale(0.95);
             pointer-events: none;
         }
-        #userDropdownMenu:not(.hidden) {
+        #userDropdownMenu:not(.hidden), #adminDropdownMenu:not(.hidden) {
             opacity: 1;
             transform: scale(1);
             pointer-events: auto;
@@ -95,9 +95,33 @@
 
                 <div class="hidden lg:flex items-center gap-6 mr-4">
                     @if(in_array($role, ['admin', 'officer']))
+                        <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/admin/manage_room') }}">ห้องเรียน</a>
                         <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/manage_user') }}">จัดการสมาชิก</a>
-                        <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/admin/manage_room') }}">จัดการห้องเรียน</a>
                         <a class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors" href="{{ url('/history') }}">การจองของฉัน</a>
+                        
+                        <div class="relative">
+                            <button id="adminDropdownBtn" class="flex items-center gap-1 text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal hover:text-primary transition-colors focus:outline-none">
+                                อื่นๆ
+                                <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                            </button>
+                            
+                            <div id="adminDropdownMenu" class="hidden absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#1a2632] rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-50">
+                                <ul class="py-1">
+                                    <li>
+                                        <a href="{{ url('/create_semesters') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                                            ภาคการศึกษา
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url('/create_room') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
+                                            จัดการห้องเรียน
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                         
                         <a href="{{ url('/scan_qr') }}" class="flex items-center justify-center size-10 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-primary hover:text-white text-[#111418] dark:text-gray-200 transition-all" title="สแกน QR-Code">
                             <span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
@@ -174,14 +198,24 @@
                             </a>
 
                             @if(in_array($role, ['admin', 'officer']))
+                                <a href="{{ url('/admin/manage_room') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                                    <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">meeting_room</span>
+                                    <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">ห้องเรียน</span>
+                                </a>
                                 <a href="{{ url('/manage_user') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">group</span>
                                     <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">จัดการสมาชิก</span>
                                 </a>
-                                <a href="{{ url('/admin/manage_room') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
-                                    <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">meeting_room</span>
+                                
+                                <a href="{{ url('/create_semesters') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                                    <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">calendar_month</span>
+                                    <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">ภาคการศึกษา</span>
+                                </a>
+                                <a href="{{ url('/create_room') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                                    <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">add_location_alt</span>
                                     <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">จัดการห้องเรียน</span>
                                 </a>
+
                                 <a href="{{ url('/history') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">history</span>
                                     <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">การจองของฉัน</span>
@@ -254,7 +288,7 @@
                         link.addEventListener('click', closeMenu);
                     });
 
-                    // Desktop Dropdown Logic
+                    // Desktop Dropdown Logic (User Profile)
                     const userDropdownBtn = document.getElementById('userDropdownBtn');
                     const userDropdownMenu = document.getElementById('userDropdownMenu');
 
@@ -262,15 +296,35 @@
                         userDropdownBtn.addEventListener('click', function(e) {
                             e.stopPropagation();
                             userDropdownMenu.classList.toggle('hidden');
-                        });
-
-                        // Close dropdown when clicking outside
-                        document.addEventListener('click', function(e) {
-                            if (!userDropdownBtn.contains(e.target) && !userDropdownMenu.contains(e.target)) {
-                                userDropdownMenu.classList.add('hidden');
-                            }
+                            // ปิดเมนู admin ถ้าเปิดอยู่
+                            if(adminDropdownMenu) adminDropdownMenu.classList.add('hidden');
                         });
                     }
+
+                    // Desktop Dropdown Logic (Admin Menu)
+                    const adminDropdownBtn = document.getElementById('adminDropdownBtn');
+                    const adminDropdownMenu = document.getElementById('adminDropdownMenu');
+
+                    if(adminDropdownBtn && adminDropdownMenu) {
+                        adminDropdownBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            adminDropdownMenu.classList.toggle('hidden');
+                            // ปิดเมนู user ถ้าเปิดอยู่
+                            if(userDropdownMenu) userDropdownMenu.classList.add('hidden');
+                        });
+                    }
+
+                    // Close dropdowns when clicking outside
+                    document.addEventListener('click', function(e) {
+                        // Close User Dropdown
+                        if (userDropdownBtn && userDropdownMenu && !userDropdownBtn.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+                            userDropdownMenu.classList.add('hidden');
+                        }
+                        // Close Admin Dropdown
+                        if (adminDropdownBtn && adminDropdownMenu && !adminDropdownBtn.contains(e.target) && !adminDropdownMenu.contains(e.target)) {
+                            adminDropdownMenu.classList.add('hidden');
+                        }
+                    });
                 });
             </script>
         </div>

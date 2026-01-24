@@ -22,12 +22,14 @@
         <div class="px-4 md:px-40 flex flex-1 justify-center">
             <div class="layout-content-container flex flex-col w-full max-w-[480px]">
 
-                @if($bookings->status == 'รับกุญแจแล้ว')
-                    <div class="mt-2 mb-2 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-                        <p class="text-sm text-blue-600 mb-1">แจ้งรหัสนี้แก่เจ้าหน้าที่เพื่อคืนกุญแจ</p>
+                <div class="mt-2 mb-2 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                    <p class="text-sm text-blue-600 mb-1">แจ้งรหัสนี้แก่เจ้าหน้าที่เพื่อคืนกุญแจ</p>
+                    @if($bookings->status == 'รับกุญแจแล้ว')
                         <p class="text-4xl font-black text-blue-800 tracking-widest">{{ $bookings->return_verify_code }}</p>
-                    </div>
-                @endif
+                    @else
+                        <p class="font-black text-blue-800 tracking-widest">แสดงเมื่อรับกุญแจแล้ว</p>
+                    @endif
+                </div>
 
                 <div class="relative flex flex-col rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-white dark:bg-zinc-900 overflow-hidden border border-zinc-100 dark:border-zinc-800">
                     
