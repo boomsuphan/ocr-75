@@ -81,18 +81,27 @@
     const onScanSuccess = (decodedText, decodedResult) => {
         console.log(`Scan result: ${decodedText}`);
 
-        if (decodedText.startsWith(checkUrlBase)) {
-            // >>> กรณีถูกต้อง
-            if(isCameraRunning) {
-                html5QrCode.stop().catch(() => {}).finally(() => {
+        try {
+            const url = new URL(decodedText);
+            const isCorrectHost = url.hostname.includes('boomth.com');
+            const isCorrectPath = url.pathname.startsWith('/check_qr');
+
+            if (isCorrectHost && isCorrectPath) {
+                // >>> กรณีถูกต้อง
+                if(isCameraRunning) {
+                    html5QrCode.stop().catch(() => {}).finally(() => {
+                        window.location.href = decodedText;
+                    });
+                } else {
                     window.location.href = decodedText;
-                });
+                }
             } else {
-                window.location.href = decodedText;
+                // >>> กรณี QR Code ไม่ถูกต้อง
+                handleScanError("QR Code ไม่ถูกต้อง! กรุณาสแกนจากระบบเท่านั้น");
             }
-        } else {
-            // >>> กรณี QR Code ไม่ถูกต้อง
-            handleScanError("QR Code ไม่ถูกต้อง! กรุณาสแกน QR Code จากระบบจองห้องเท่านั้น");
+        } catch (e) {
+            // กรณีที่สแกนได้ไม่ใช่ URL
+            handleScanError("รูปแบบ QR Code ไม่ถูกต้อง");
         }
     };
 
