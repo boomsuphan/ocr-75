@@ -143,7 +143,7 @@
                 </div>
 
                 <div class="mt-8 pt-6 border-t border-[#f3e9e5] dark:border-[#3d2f2a] flex justify-end gap-3">
-                    <a href="{{ url('/admin/manage_user') }}" class="px-6 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-[#342a26] transition-all">
+                    <a href="{{ url('/manage_user') }}" class="px-6 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#3d2f2a] text-[#2d2421] dark:text-white font-bold text-sm hover:bg-gray-50 dark:hover:bg-[#342a26] transition-all">
                         ยกเลิก
                     </a>
                     <button type="submit" class="px-8 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/25 hover:bg-primary-hover transition-all flex items-center gap-2">
