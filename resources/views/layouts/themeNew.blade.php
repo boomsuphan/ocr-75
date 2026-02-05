@@ -119,6 +119,12 @@
                                             จัดการห้องเรียน
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ url('/admin/report') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">table_view</span>
+                                            Export Excel
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -214,6 +220,10 @@
                                 <a href="{{ url('/create_room') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
                                     <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">add_location_alt</span>
                                     <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">จัดการห้องเรียน</span>
+                                </a>
+                                <a href="{{ url('/admin/report') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                                    <span class="material-symbols-outlined text-[#111418] dark:text-white group-hover:text-primary text-[20px]">table_view</span>
+                                    <span class="text-[#111418] dark:text-white text-sm font-medium group-hover:text-primary">Export Excel</span>
                                 </a>
 
                                 <a href="{{ url('/history') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
