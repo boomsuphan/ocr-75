@@ -306,55 +306,71 @@ class RoomController extends Controller
         $roomId = $request->input('room_filter');
         
         $query = Booking::query()->with(['user', 'room']);
-        $reportTitle = "รายงานการจองห้องเรียน ";
+        
+        // ตัวแปรสำหรับสร้างชื่อไฟล์
+        $fileTitle = "รายงานการจองห้องเรียน"; 
+        
+        // Array ชื่อเดือนไทย
+        $thaiMonths = [
+            1 => 'มกราคม', 2 => 'กุมภาพันธ์', 3 => 'มีนาคม', 4 => 'เมษายน',
+            5 => 'พฤษภาคม', 6 => 'มิถุนายน', 7 => 'กรกฎาคม', 8 => 'สิงหาคม',
+            9 => 'กันยายน', 10 => 'ตุลาคม', 11 => 'พฤศจิกายน', 12 => 'ธันวาคม'
+        ];
 
-        // --- 1. จัดการข้อความส่วน "ห้อง" ---
+        // --- จัดการชื่อ "ห้อง" ---
         if ($roomId && $roomId !== 'all') {
-            $roomName = Room::find($roomId)->name ?? 'ไม่ระบุ';
-            $reportTitle .= "ห้อง " . $roomName;
+            $room = Room::find($roomId);
+            $roomName = $room->name ?? 'ไม่ระบุ';
+            
+            $fileTitle .= " ห้อง " . $roomName; 
+            
+            // กรอง Query
+            $query->where('room_id', $roomId);
         } else {
-            $reportTitle .= "ทุกห้อง";
+            $fileTitle .= " ทุกห้อง";
         }
 
-        // --- 2. จัดการข้อความส่วน "วัน/เดือน/ปี" และ Filter ---
+        // --- จัดการชื่อ "ช่วงเวลา" และ Filter Query ---
         if ($filterType === 'year') {
             $year = $request->input('year');
             $query->whereYear('date_booking', $year);
-            $reportTitle .= " ประจำปี พ.ศ. " . ($year + 543);
+            
+            $fileTitle .= " ประจำปี " . ($year + 543);
         } 
         elseif ($filterType === 'month') {
             $year = $request->input('month_year');
             $month = $request->input('month');
             $query->whereYear('date_booking', $year)->whereMonth('date_booking', $month);
             
-            $monthName = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'][$month];
-            $reportTitle .= " ประจำเดือน " . $monthName . " " . ($year + 543);
+            $fileTitle .= " ประจำเดือน " . $thaiMonths[$month] . " " . ($year + 543);
         } 
         elseif ($filterType === 'range') {
             $start = $request->input('start_date');
             $end = $request->input('end_date');
             if($start && $end) {
                  $query->whereBetween('date_booking', [$start, $end]);
-                 // แปลงวันที่เป็น format ไทยสวยๆ
-                 $startThai = date('d/m/', strtotime($start)) . (date('Y', strtotime($start)) + 543);
-                 $endThai = date('d/m/', strtotime($end)) . (date('Y', strtotime($end)) + 543);
-                 $reportTitle .= " ระหว่างวันที่ $startThai ถึง $endThai";
+                 
+                 // แปลงวันที่เป็น format ไทยย่อ
+                 $startThai = date('d-m-', strtotime($start)) . (date('Y', strtotime($start)) + 543);
+                 $endThai = date('d-m-', strtotime($end)) . (date('Y', strtotime($end)) + 543);
+                 
+                 $fileTitle .= " ระหว่างวันที่ " . $startThai . " ถึง " . $endThai;
             }
         }
 
-        if ($roomId && $roomId !== 'all') {
-            $query->where('room_id', $roomId);
-        }
-
-        $bookings = $query->orderBy('date_booking', 'ASC')->get();
+        // ดึงข้อมูล
+        $bookings = $query->orderBy('date_booking', 'ASC')
+                          ->orderBy('time_start_booking', 'ASC')
+                          ->get();
 
         if ($bookings->isEmpty()) {
             return back()->with('error', 'ไม่พบข้อมูลการจองตามเงื่อนไขที่เลือก');
         }
         
-        $fileName = 'booking_report_' . date('Ymd_His') . '.xlsx';
+        // --- ตั้งชื่อไฟล์ ---
+        $fileName = $fileTitle . '.xlsx';
 
-        // *** ส่ง $reportTitle ไปด้วย ***
-        return Excel::download(new BookingsExport($bookings, $reportTitle), $fileName);
+        // ส่งออก Excel
+        return Excel::download(new BookingsExport($bookings, $fileTitle), $fileName);
     }
 }
