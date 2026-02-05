@@ -10,9 +10,10 @@ use App\Models\Semester;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Room;
 use Illuminate\Http\Request;
-
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Exports\BookingsExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RoomController extends Controller
 {
@@ -291,5 +292,69 @@ class RoomController extends Controller
         }
 
         return back()->with('error', 'ไม่พบข้อมูลห้องเรียน');
+    }
+
+    public function report_index()
+    {
+        $rooms = Room::all(); 
+        return view('admin.report', compact('rooms'));
+    }
+
+    public function export_excel(Request $request)
+    {
+        $filterType = $request->input('filter_type');
+        $roomId = $request->input('room_filter');
+        
+        $query = Booking::query()->with(['user', 'room']);
+        $reportTitle = "รายงานการจองห้องเรียน ";
+
+        // --- 1. จัดการข้อความส่วน "ห้อง" ---
+        if ($roomId && $roomId !== 'all') {
+            $roomName = Room::find($roomId)->name ?? 'ไม่ระบุ';
+            $reportTitle .= "ห้อง " . $roomName;
+        } else {
+            $reportTitle .= "ทุกห้อง";
+        }
+
+        // --- 2. จัดการข้อความส่วน "วัน/เดือน/ปี" และ Filter ---
+        if ($filterType === 'year') {
+            $year = $request->input('year');
+            $query->whereYear('date_booking', $year);
+            $reportTitle .= " ประจำปี พ.ศ. " . ($year + 543);
+        } 
+        elseif ($filterType === 'month') {
+            $year = $request->input('month_year');
+            $month = $request->input('month');
+            $query->whereYear('date_booking', $year)->whereMonth('date_booking', $month);
+            
+            $monthName = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'][$month];
+            $reportTitle .= " ประจำเดือน " . $monthName . " " . ($year + 543);
+        } 
+        elseif ($filterType === 'range') {
+            $start = $request->input('start_date');
+            $end = $request->input('end_date');
+            if($start && $end) {
+                 $query->whereBetween('date_booking', [$start, $end]);
+                 // แปลงวันที่เป็น format ไทยสวยๆ
+                 $startThai = date('d/m/', strtotime($start)) . (date('Y', strtotime($start)) + 543);
+                 $endThai = date('d/m/', strtotime($end)) . (date('Y', strtotime($end)) + 543);
+                 $reportTitle .= " ระหว่างวันที่ $startThai ถึง $endThai";
+            }
+        }
+
+        if ($roomId && $roomId !== 'all') {
+            $query->where('room_id', $roomId);
+        }
+
+        $bookings = $query->orderBy('date_booking', 'ASC')->get();
+
+        if ($bookings->isEmpty()) {
+            return back()->with('error', 'ไม่พบข้อมูลการจองตามเงื่อนไขที่เลือก');
+        }
+        
+        $fileName = 'booking_report_' . date('Ymd_His') . '.xlsx';
+
+        // *** ส่ง $reportTitle ไปด้วย ***
+        return Excel::download(new BookingsExport($bookings, $reportTitle), $fileName);
     }
 }

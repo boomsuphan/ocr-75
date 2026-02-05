@@ -76,6 +76,9 @@ Route::middleware(['auth', 'role:admin,officer'])->group(function () {
     Route::get('room_detail/{room_id}', 'RoomController@room_detail');
     Route::post('/cancel_booking', 'BookingController@cancel_booking');
     Route::post('/room/add_recurring', 'RoomController@addRecurringSchedule');
+
+    Route::get('/admin/report', 'RoomController@report_index');
+    Route::post('/admin/report/export', 'RoomController@export_excel');
 });
 
 // แอดมิน, เจ้าหน้าที่, อาจารย์
